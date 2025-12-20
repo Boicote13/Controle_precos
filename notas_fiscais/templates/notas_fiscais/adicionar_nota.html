@@ -1,0 +1,23 @@
+{% extends 'base.html' %}  <!-- Crie um base.html depois -->
+
+{% block content %}
+<h2>Adicionar Nota Fiscal</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <h3>Dados da Nota</h3>
+    {{ form.as_p }}
+    
+    <h3>Itens da Nota</h3>
+    {{ formset.management_form }}
+    {% for item_form in formset %}
+        <div class="item-form">
+            {{ item_form.as_p }}
+        </div>
+    {% endfor %}
+    
+    <button type="submit" class="btn btn-primary">Salvar Nota</button>
+</form>
+
+<!-- Adicione JavaScript para adicionar mais itens dinamicamente se necessário -->
+{% endblock %}
