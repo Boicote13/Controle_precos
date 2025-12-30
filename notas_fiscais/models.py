@@ -70,3 +70,10 @@ class ItemNotaFiscal(models.Model):
     
     def __str__(self):
         return f"{self.quantidade} x {self.produto} - {self.nota_fiscal}"
+    
+
+"""
+Daqui pra baixo é do deepseek
+"""
+
+

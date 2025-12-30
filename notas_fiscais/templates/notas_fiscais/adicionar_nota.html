@@ -1,4 +1,4 @@
-{% extends 'base.html' %}  <!-- Crie um base.html depois -->
+
 
 {% block content %}
 <h2>Adicionar Nota Fiscal</h2>
@@ -7,6 +7,29 @@
     
     <h3>Dados da Nota</h3>
     {{ form.as_p }}
+
+    <!-- Supermercado Field -->
+    <div class="form-group mb-3">
+        <label for="{{ form.supermercado_nome.id_for_label }}">{{ form.supermercado_nome.label }}</label>
+        {{ form.supermercado_nome }}
+        {{ form.criar_novo_supermercado }}
+        
+        <!-- Suggestions Container -->
+        <div id="suggestions-container" class="list-group mt-1" style="display: none; position: absolute; z-index: 1000; width: 100%; max-width: 400px;">
+            <!-- Suggestions will appear here -->
+        </div>
+        
+        <!-- New Supermarket Option -->
+        <div class="form-check mt-2">
+            <input type="checkbox" class="form-check-input" id="toggle-criar-novo">
+            <label class="form-check-label" for="toggle-criar-novo">
+                Criar novo supermercado
+            </label>
+        </div>
+        
+        <!-- Status Message -->
+        <div id="supermercado-status" class="form-text"></div>
+    </div>
     
     <h3>Itens da Nota</h3>
     {{ formset.management_form }}
