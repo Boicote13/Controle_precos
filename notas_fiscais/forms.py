@@ -33,6 +33,22 @@ ItemNotaFiscalFormSet = forms.inlineformset_factory(
 Daqui pra baixo é deepseek
 """
 
+class SupermercadoForm(forms.ModelForm):
+    class Meta:
+        model = Supermercado
+        fields = ['nome', 'endereco']
+        widgets = {
+            'nome': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nome do supermercado'
+            }),
+            'endereco': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Endereço (Nome da rua, número. Cidade.)'
+            }),
+        }
+
 class NotaFiscalForm(forms.ModelForm):
     supermercado_nome = forms.CharField(
         label='Supermercado',
