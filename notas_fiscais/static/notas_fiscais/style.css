@@ -1,17 +1,37 @@
-div {
-    background-color: rgb(174,206,228);
+nav {
+    display: inline-flex;
+    background-color: rgb(77,101,77);
+    /* background-image: ; */
     height: 200px;
+    width: 100%;
+}
+
+a {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 50px;
+    text-align: center;
+    padding: 50px 25px;
+    color: white;
+}
+
+a:hover {
+    background-color: rgb(234,221,198);
+    color: rgb(77,101,77);
 }
 
 h1 {
     font-size: 45px ;
     color:black;
     padding: 23px;
+    width: 300px;
 }
 
 h2 {
     color:black;
-    font-size: medium;
+    font-size: 20px;
+    padding: 23px;
+    /* margin-left: 400px; */
+    width: 200px;
 }
 
 h3 {
@@ -25,4 +45,4 @@ h3 {
 #aecee4	(174,206,228)
 #88a4c9	(136,164,201)
 #b2ff59	(178,255,89)
-/*
+*/

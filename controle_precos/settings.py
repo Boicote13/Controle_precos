@@ -120,7 +120,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static"
+    BASE_DIR / "notas_fiscais/static"
 ]
 
 STATICFILES_ROOT = f'{BASE_DIR}/notas_fiscais/static/notas_fiscais/style.css'
