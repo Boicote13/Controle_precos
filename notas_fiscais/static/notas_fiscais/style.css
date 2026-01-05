@@ -1,12 +1,24 @@
+/* Base HTML Elements */
+
+body {
+    margin: 0px;
+}
+
 nav {
     display: inline-flex;
     background-color: rgb(77,101,77);
-    /* background-image: ; */
     height: 200px;
     width: 100%;
+    padding: 0px;
+    margin-bottom: 25px;
 }
 
-a {
+div.page_content {
+    display: grid;
+    justify-content: space-evenly;
+}
+
+a.nav {
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     font-size: 50px;
     text-align: center;
@@ -19,11 +31,57 @@ a:hover {
     color: rgb(77,101,77);
 }
 
+
+div.row {
+    width: max-content;
+    height: 20px;
+    background-color: inherit;
+}
+
+div.footer {
+    width: 100%;
+    background-color: rgb(164,71,65);
+    height: 100px;
+    margin-top: 25px;
+}
+
+div.homepage {
+    margin: 2px 5px;
+}
+
+
+
+/* Home page Elements */
+
+.block {
+    background-color: rgb(117,123,143);
+    padding: 30px 10px;
+    display: grid;
+    margin-bottom: 30px;
+    align-content: center;
+    justify-content: space-evenly;
+}
+
+.inside_block {
+    position: relative;
+    margin: 25px;
+    padding: 10px;
+    background-color: rgb(234,221,198);
+    width: 750px;
+    height: 500px;
+    border-radius: 50px
+}
+
+
+/* Headers */
+
 h1 {
-    font-size: 45px ;
+    font-size: 45px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     color:black;
-    padding: 23px;
-    width: 300px;
+    margin: 0px 25px;
+    height: 50px;
+    text-align: left;
 }
 
 h2 {
@@ -38,6 +96,8 @@ h3 {
     color: brown;
     font-size: large;
 }
+
+/* Font elements */
 
 /*
 #bac0c5	(186,192,197)

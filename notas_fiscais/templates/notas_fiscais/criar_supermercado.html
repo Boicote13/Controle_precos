@@ -1,18 +1,17 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="{% static 'notas_fiscais/style.css' %}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <div>
-        <h1>Adicionar Supermercado</h1>
-    </div>
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Formulario do modelform do Supermercado -->
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
     
-</head>
-<body>
-    <h3>
-        Ola testinho
-    </h3>
-</body>
-</html>
+    <h3> Dados do Supermercado </h3>
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary">Salvar Nota</button>
+
+</form>
+
+{% endblock %}

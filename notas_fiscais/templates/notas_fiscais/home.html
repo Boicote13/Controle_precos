@@ -1,16 +1,37 @@
-<!DOCTYPE html>
-{% load static %}
-<html>
-<head>
-    <link rel="stylesheet" href="{% static 'notas_fiscais/style.css' %}">
-    <title>Minha Homepage</title>
-</head>
-<nav>
-    <a class="hover" href="#"> Notas </a> 
-    <a class="hover" href="#"> Items </a> 
-    <a class="hover" href="#"> Supermercados </a> 
-</nav>
-<div>
-    
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page_content">
+    <div class="block">
+        <h1> Notas </h1>
+        <div class="inside_block">
+        <p>
+            Paragrfo dentro de inside_block
+        </p>
+
+        </div>
+    </div>
+
+    <div class="block">
+        <h1> Items </h1>
+        <div class="inside_block">
+        <p>
+            Paragrfo dentro de inside_block
+        </p>
+
+        </div>
+    </div>
+
+    <div class="block">
+        <h1> Supermercados </h1>
+        <div class="inside_block">
+        <p>
+            Paragrfo dentro de inside_block
+        </p>
+
+        </div>
+    </div>
 </div>
-</html>
+
+{% endblock %}

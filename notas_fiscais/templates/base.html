@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'notas_fiscais/style.css' %}">
+    <title>Minha Homepage</title>
+</head>
+<nav>
+    <a class="nav hover" href="{% url 'lista_notas' %}"> Notas </a> 
+    <a class="nav hover" href="#"> Items </a> 
+    <a class="nav hover" href="#"> Supermercados </a> 
+    <div class="homepage">
+        <a id="logo_home">
+            <img>
+        </a>
+    </div>
+</nav>
+
+</div>
+{% block content %}
+<!-- Child templates will insert content here -->
+{% endblock %}
+
+<div class=footer>
+
+</div>
