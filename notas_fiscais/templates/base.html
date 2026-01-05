@@ -5,18 +5,22 @@
     <link rel="stylesheet" href="{% static 'notas_fiscais/style.css' %}">
     <title>Minha Homepage</title>
 </head>
+<header>
 <nav>
+    <a class="nav hover" href="{% url 'home' %}"> Início </a>
     <a class="nav hover" href="{% url 'lista_notas' %}"> Notas </a> 
     <a class="nav hover" href="#"> Items </a> 
     <a class="nav hover" href="#"> Supermercados </a> 
-    <div class="homepage">
-        <a id="logo_home">
-            <img>
+    <div class="icons">
+        <a href="{% url 'admin:index' %}" id="logo_admin">
+            <img src="{% static 'notas_fiscais/gear.svg' %}" width="50%" height="50%">
+            <!-- width="150%", height="150%" -->
         </a>
     </div>
 </nav>
 
-</div>
+</header>
+
 {% block content %}
 <!-- Child templates will insert content here -->
 {% endblock %}

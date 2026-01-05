@@ -2,21 +2,21 @@
 
 {% block content %}
 <div class="page_content">
-<h2>Notas Fiscais Cadastradas</h2>
-<a href="{% url 'adicionar_nota' %}" class="btn btn-success mb-3">Adicionar Nova Nota</a>
+<h2>Items comprados</h2>
 
 <table class="table">
     <thead>
         <tr>
-            <th>Número</th>
-            <th>Supermercado</th>
-            <th>Data</th>
-            <th>Valor Total</th>
-            <th>Ações</th>
+            <th>Nome do produto</th>
+            <th>Categoria</th>
         </tr>
     </thead>
     <tbody>
-        {% for nota in notas %}
+        {% for item in items %}
+
+
+        <p> Aqui vao os dados de todos os items do banco </p>
+        <!--
         <tr>
             <td>{{ nota.numero }}</td>
             <td>{{ nota.supermercado }}</td>
@@ -26,9 +26,10 @@
                 <a href="#" class="btn btn-sm btn-info">Detalhes</a>
             </td>
         </tr>
+        -->
         {% empty %}
         <tr>
-            <td colspan="5">Nenhuma nota cadastrada ainda.</td>
+            <td colspan="2">Nenhuma nota cadastrada ainda.</td>
         </tr>
         {% endfor %}
     </tbody>

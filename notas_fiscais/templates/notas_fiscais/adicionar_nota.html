@@ -8,6 +8,7 @@
 </head>
 
 {% block content %}
+<div class="page_content">
 <h2>Adicionar Nota Fiscal</h2>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
@@ -63,6 +64,7 @@
     
     <button type="submit" class="btn btn-primary">Salvar Nota</button>
 </form>
+</div>
 
 <!-- Adicione JavaScript para adicionar mais itens dinamicamente se necessário -->
 {% endblock %}

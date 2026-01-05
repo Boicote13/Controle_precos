@@ -50,9 +50,9 @@ class CategoriaProduto(models.Model):
 
 class Produto(models.Model):
     nome = models.CharField(max_length=200)
-    codigo_barras = models.CharField(max_length=50, blank=True, null=True)
+    # codigo_barras = models.CharField(max_length=50, blank=True, null=True)
     categoria = models.ForeignKey(CategoriaProduto, on_delete=models.SET_NULL, null=True, blank=True)
-    descricao = models.TextField(blank=True, null=True)
+    # descricao = models.TextField(blank=True, null=True)
     
     def __str__(self):
         return self.nome
@@ -71,9 +71,4 @@ class ItemNotaFiscal(models.Model):
     def __str__(self):
         return f"{self.quantidade} x {self.produto} - {self.nota_fiscal}"
     
-
-"""
-Daqui pra baixo é do deepseek
-"""
-
 
