@@ -25,6 +25,9 @@ class Supermercado(models.Model):
     nome = models.CharField(max_length=100)
     # cnpj = models.CharField(max_length=18, blank=True, null=True)
     endereco = models.TextField(blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Supermercados"
     
     def __str__(self):
         return self.nome

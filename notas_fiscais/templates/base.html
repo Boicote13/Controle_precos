@@ -12,7 +12,7 @@
     <a class="nav hover" href="{% url 'home' %}"> Início </a>
     <a class="nav hover" href="{% url 'lista_notas' %}"> Notas </a> 
     <a class="nav hover" href="#"> Items </a> 
-    <a class="nav hover" href="#"> Supermercados </a> 
+    <a class="nav hover" href="{% url 'lista_mercado' %}"> Supermercados </a> 
     <div class="icons">
         <a href="{% url 'admin:index' %}" id="logo_admin">
             <img src="{% static 'notas_fiscais/gear.svg' %}" width="50%" height="50%">

@@ -15,40 +15,31 @@
         {% csrf_token %}
         
         <h3>Dados da Nota</h3>
-        {{ form.as_p }}
+        <div>
+            <label for="id_numero">Numero:</label>
+            <input type="text" name="numero" class="form-control" maxlength="50" required id="id_numero">
+        </div>
+
+        <div>
+            <label for="id_data_emissao">Data emissao:</label>
+            <input type="date" name="data_emissao" class="form-control" required id="id_data_emissao">
+        </div>
+
+        <div>
+            <label for="id_valor_total">Valor total:</label>
+            <input type="number" name="valor_total" value="0.0" class="form-control" step="0.01" required id="id_valor_total">             
+        </div>
 
         <!-- Supermarket Selection -->
-        <!--
-        <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-        \\--> 
+
         <div>
-            <!--
-            <div>
-                <label for="supermercado-select" class="form-label fw-bold">
-                    {{ form.supermercado.label }}
-                </label>
-                <a href="{% url 'criar_supermercado' %}" 
-                    class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-plus-circle"></i> Adicionar Novo Supermercado
-                </a>
-            </div>
-            
-            <div class="input-group">
-                {{ form.supermercado }}
-                <button type="button" class="btn btn-outline-secondary" 
-                        onclick="window.location.reload()" 
-                        title="Recarregar lista">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </button>
-            </div>
-            -->
+            <label for="supermercado-input"> Escolha um supermercado: </label>
+            <select id="{{ form.supermercado_nome }}" name="Supermercado">
+                {% for item in supermercados %}
+                <option value="{{ item }}">{{ item }}</option>       
+            {% endfor %}
+            </select>
 
-            <label for="{{ form.supermercado_nome }}">Escolha um supermercado:</label>
-
-            <p> {{ supermercado }} </p>
-
-            
             
             {% if form.supermercado.errors %}
                 <div class="alert alert-danger mt-2">

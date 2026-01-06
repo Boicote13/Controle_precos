@@ -4,12 +4,15 @@ from .forms import NotaFiscalForm, ItemNotaFiscalFormSet, SupermercadoForm
 from .models import NotaFiscal, Supermercado
 
 def adicionar_nota(request):
+
+    supermercados = Supermercado.objects.filter().all()
+
     if request.method == 'POST':
         form = NotaFiscalForm(request.POST, request.FILES)
         formset = ItemNotaFiscalFormSet(request.POST)
 
         #@TODO Otimizar essa ORM pra pegar só os nomes dos mercados
-        supermercados = Supermercado.objects.all().order_by("-nome")
+        # supermercados = Supermercado.objects.all().order_by("-nome")
         
         if form.is_valid() and formset.is_valid():
             nota = form.save()
@@ -19,7 +22,7 @@ def adicionar_nota(request):
     else:
         form = NotaFiscalForm()
         formset = ItemNotaFiscalFormSet()
-        supermercados = Supermercado()
+        supermercados = Supermercado.objects.filter().all()
     
     return render(request, 'notas_fiscais/adicionar_nota.html', {
         'supermercados' : supermercados,
@@ -43,7 +46,7 @@ def criar_supermercado(request):
                 # Return to add invoice form with the new supermarket pre-selected
                 return redirect(f"{reverse('adicionar_nota')}?supermercado={supermercado.id}")
             
-            return redirect('lista_notas')  # Or wherever you list supermarkets
+            return redirect('lista_mercado') 
     else:
         form = SupermercadoForm()
     
@@ -54,6 +57,10 @@ def criar_supermercado(request):
 def lista_notas(request):
     notas = NotaFiscal.objects.all().order_by('-data_emissao')
     return render(request, 'notas_fiscais/lista_notas.html', {'notas': notas})
+
+def lista_supermercados(request):
+    supermercados  = Supermercado.objects.filter().all()
+    return render(request, 'notas_fiscais/lista_supermercado.html', {'supermercados': supermercados})
 
 def home_page(request):
     return render(request, 'notas_fiscais/home.html')
