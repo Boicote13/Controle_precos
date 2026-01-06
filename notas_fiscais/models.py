@@ -72,3 +72,4 @@ class ItemNotaFiscal(models.Model):
         return f"{self.quantidade} x {self.produto} - {self.nota_fiscal}"
     
 
+

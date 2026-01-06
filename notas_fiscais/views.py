@@ -1,12 +1,15 @@
 # Create your views here.
 from django.shortcuts import render, redirect
 from .forms import NotaFiscalForm, ItemNotaFiscalFormSet, SupermercadoForm
-from .models import NotaFiscal
+from .models import NotaFiscal, Supermercado
 
 def adicionar_nota(request):
     if request.method == 'POST':
         form = NotaFiscalForm(request.POST, request.FILES)
         formset = ItemNotaFiscalFormSet(request.POST)
+
+        #@TODO Otimizar essa ORM pra pegar só os nomes dos mercados
+        supermercados = Supermercado.objects.all().order_by("-nome")
         
         if form.is_valid() and formset.is_valid():
             nota = form.save()
@@ -16,8 +19,10 @@ def adicionar_nota(request):
     else:
         form = NotaFiscalForm()
         formset = ItemNotaFiscalFormSet()
+        supermercados = Supermercado()
     
     return render(request, 'notas_fiscais/adicionar_nota.html', {
+        'supermercados' : supermercados,
         'form': form,
         'formset': formset,
     })

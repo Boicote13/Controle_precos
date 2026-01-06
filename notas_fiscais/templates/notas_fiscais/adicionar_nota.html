@@ -2,68 +2,77 @@
 
 <!DOCTYPE html>
 {% load static %}
-<html>
 <head>
 <link rel="stylesheet" href="{% static 'notas_fiscais/style.css' %}">
 </head>
 
 {% block content %}
 <div class="page_content">
-<h2>Adicionar Nota Fiscal</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <h3>Dados da Nota</h3>
-    {{ form.as_p }}
-
-    <!-- Supermarket Selection -->
-    <!--
-    <div class="mb-4">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-    \\--> 
-    <div>
-        <div>
-            <label for="supermercado-select" class="form-label fw-bold">
-                {{ form.supermercado.label }}
-            </label>
-            <a href="{% url 'criar_supermercado' %}" 
-                class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-plus-circle"></i> Adicionar Novo Supermercado
-            </a>
-        </div>
-        
-        <div class="input-group">
-            {{ form.supermercado }}
-            <button type="button" class="btn btn-outline-secondary" 
-                    onclick="window.location.reload()" 
-                    title="Recarregar lista">
-                <i class="bi bi-arrow-clockwise"></i>
-            </button>
-        </div>
-        
-        {% if form.supermercado.errors %}
-            <div class="alert alert-danger mt-2">
-                {% for error in form.supermercado.errors %}
-                    {{ error }}
-                {% endfor %}
-            </div>
-        {% endif %}
-        
-        <small class="form-text text-muted">
-            Selecione um supermercado da lista ou clique em "Adicionar Novo" para cadastrar.
-        </small>
+    <div style="display: flex; border: 2px solid rgb(77,101,77); background-color: rgba(77,101,77,70%); align-content: center; justify-content: center;">
+    <p style="font-size: 25px;">Adicionar Nota Fiscal</p>
     </div>
-    
-    <h3>Itens da Nota</h3>
-    {{ formset.management_form }}
-    {% for item_form in formset %}
-        <div class="item-form">
-            {{ item_form.as_p }}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <h3>Dados da Nota</h3>
+        {{ form.as_p }}
+
+        <!-- Supermarket Selection -->
+        <!--
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+        \\--> 
+        <div>
+            <!--
+            <div>
+                <label for="supermercado-select" class="form-label fw-bold">
+                    {{ form.supermercado.label }}
+                </label>
+                <a href="{% url 'criar_supermercado' %}" 
+                    class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus-circle"></i> Adicionar Novo Supermercado
+                </a>
+            </div>
+            
+            <div class="input-group">
+                {{ form.supermercado }}
+                <button type="button" class="btn btn-outline-secondary" 
+                        onclick="window.location.reload()" 
+                        title="Recarregar lista">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+            -->
+
+            <label for="{{ form.supermercado_nome }}">Escolha um supermercado:</label>
+
+            <p> {{ supermercado }} </p>
+
+            
+            
+            {% if form.supermercado.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for error in form.supermercado.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <small class="form-text text-muted">
+                Selecione um supermercado da lista ou clique em "Adicionar Novo" para cadastrar.
+            </small>
         </div>
-    {% endfor %}
-    
-    <button type="submit" class="btn btn-primary">Salvar Nota</button>
-</form>
+        
+        <h3>Itens da Nota</h3>
+        {{ formset.management_form }}
+        {% for item_form in formset %}
+            <div class="item-form">
+                {{ item_form.as_p }}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn btn-primary">Salvar Nota</button>
+    </form>
 </div>
 
 <!-- Adicione JavaScript para adicionar mais itens dinamicamente se necessário -->
