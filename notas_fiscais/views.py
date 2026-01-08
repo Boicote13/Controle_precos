@@ -1,7 +1,8 @@
 # Create your views here.
-from django.shortcuts import render, redirect
-from .forms import NotaFiscalForm, ItemNotaFiscalFormSet, SupermercadoForm
-from .models import NotaFiscal, Supermercado
+from django.forms import inlineformset_factory
+from django.shortcuts import render, redirect, get_object_or_404
+from .forms import NotaFiscalForm, ItemNotaFiscalForm, SupermercadoForm
+from .models import NotaFiscal, Supermercado, ItemNotaFiscal
 
 def adicionar_nota(request):
 
@@ -9,55 +10,69 @@ def adicionar_nota(request):
 
     if request.method == 'POST':
         form = NotaFiscalForm(request.POST)
-        formset = ItemNotaFiscalFormSet(request.POST)
-
-        #@TODO Otimizar essa ORM pra pegar só os nomes dos mercados
-        # supermercados = Supermercado.objects.all().order_by("-nome")
-        
-        if form.is_valid() and formset.is_valid():
-            nota = form.save()
-            formset.instance = nota
-            formset.save()
-            return redirect('lista_notas')  # Vamos criar esta view depois
+        if form.is_valid():
+            nota_fiscal = form.save()
+            return redirect('adicionar_itens', nota_id=nota_fiscal.id)
     else:
         form = NotaFiscalForm()
-        formset = ItemNotaFiscalFormSet()
-        # supermercados = Supermercado.objects.filter().all()
 
-    """
-    for item in formset:
-        print(item)
-        print('+++++++++++++')
-        for field in item:
-            print(field.label)
-            print('+++++++++++++')
-        print('++++ END +++++')
-    print('%%%%%%%%%%%%%%')
-    """
-    
-    
-    # print([print(formitem) for formitem in formset])
     
     return render(request, 'notas_fiscais/adicionar_nota.html', {
         'supermercados' : supermercados,
         'form': form,
-        'formset': formset,
+    })
+
+def adicionar_itens(request, nota_id):
+
+    nota_fiscal = get_object_or_404(NotaFiscal, id=nota_id)
+
+    num = int(nota_fiscal.total_items)
+
+    ItemNotaFiscalFormSet = inlineformset_factory(
+            NotaFiscal, 
+            ItemNotaFiscal,
+            form=ItemNotaFiscalForm,
+            exclude=['supermercado'],
+            extra=num,
+            can_delete=False
+       )
+
+    if request.method == "POST":
+        formset = ItemNotaFiscalFormSet(request.POST, instance=nota_fiscal)
+        if formset.is_valid():
+            formset.save()
+            return redirect('detalhe_nota', nota_id=nota_fiscal.id)
+        else:
+            return redirect('lista_notas')
+    else:
+        formset = ItemNotaFiscalFormSet(instance=nota_fiscal)
+
+    return render(request, 'notas_fiscais/adicionar_itens.html', {
+        'nota_fiscal': nota_fiscal,
+        'formset' : formset
+        })
+
+def detalhe_nota(request, nota_id):
+
+    nota_fiscal = get_object_or_404(NotaFiscal, id=nota_id)
+
+    items = ItemNotaFiscal.objects.filter(nota_fiscal=nota_fiscal).values()
+    
+    return render(request, 'notas_fiscais/detalhe_nota.html', {
+        'nota_fiscal' : nota_fiscal,
+        'items_queryset' : items,
     })
 
 def criar_supermercado(request):
-    """
-    View for creating new supermarket (standalone)
-    """
+
     if request.method == 'POST':
         form = SupermercadoForm(request.POST)
         
         if form.is_valid():
             supermercado = form.save()
             
-            # Check if we should return to invoice form
             return_to_nota = request.GET.get('return_to_nota', 'false')
             if return_to_nota == 'true':
-                # Return to add invoice form with the new supermarket pre-selected
                 return redirect(f"{reverse('adicionar_nota')}?supermercado={supermercado.id}")
             
             return redirect('lista_mercado') 
@@ -68,9 +83,15 @@ def criar_supermercado(request):
         'form': form,
     })
 
+
+
 def lista_notas(request):
-    notas = NotaFiscal.objects.all().order_by('-data_emissao')
+    notas = NotaFiscal.objects.all()
     return render(request, 'notas_fiscais/lista_notas.html', {'notas': notas})
+
+def lista_itens(request):
+    items = ItemNotaFiscal.objects.filter().all()
+    return render(request, 'notas_fiscais/lista_items.html', {'items': items })
 
 def lista_supermercados(request):
     supermercados  = Supermercado.objects.filter().all()

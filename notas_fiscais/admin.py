@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
-from .models import Supermercado, NotaFiscal, CategoriaProduto, Produto, ItemNotaFiscal
+from .models import Supermercado, NotaFiscal, ItemNotaFiscal
 
 class ItemNotaFiscalInline(admin.TabularInline):
     model = ItemNotaFiscal
@@ -11,10 +11,10 @@ class ItemNotaFiscalInline(admin.TabularInline):
 @admin.register(NotaFiscal)
 class NotaFiscalAdmin(admin.ModelAdmin):
     inlines = [ItemNotaFiscalInline]
-    list_display = ('numero', 'supermercado', 'data_emissao', 'valor_total')
+    list_display = ('supermercado', 'data_emissao', 'valor_total')
     list_filter = ('supermercado', 'data_emissao')
-    search_fields = ('numero', 'supermercado__nome')
+    search_fields = ['supermercado__nome']
 
 admin.site.register(Supermercado)
-admin.site.register(CategoriaProduto)
-admin.site.register(Produto)
+#admin.site.register(CategoriaProduto)
+#admin.site.register(Produto)

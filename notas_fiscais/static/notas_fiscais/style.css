@@ -21,7 +21,6 @@ div.page_content {
 }
 
 a.nav {
-    /* font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; */
     font-size: 50px;
     text-align: center;
     padding: 50px 25px;
@@ -48,15 +47,10 @@ div.footer {
 }
 
 div.icons {
-    /* position: absolute;
-    right: 550px; */
     margin: 20px 5px;
     align-content: center;
     padding: 10px;
-    /* justify-content:space-around ; */
 }
-
-
 
 /* Home page Elements */
 
@@ -114,6 +108,10 @@ form.nota {
 
 div.items {
     display: grid;
+}
+
+input.notas {
+    width: 60px;
 }
 
 input {

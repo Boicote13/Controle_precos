@@ -8,7 +8,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Número</th>
             <th>Supermercado</th>
             <th>Data</th>
             <th>Valor Total</th>
@@ -18,12 +17,11 @@
     <tbody>
         {% for nota in notas %}
         <tr>
-            <td>{{ nota.numero }}</td>
             <td>{{ nota.supermercado }}</td>
             <td>{{ nota.data_emissao|date:"d/m/Y" }}</td>
             <td>R$ {{ nota.valor_total }}</td>
             <td>
-                <a href="#" class="btn btn-sm btn-info">Detalhes</a>
+                <a href="{% url 'detalhe_nota' nota.id %}" class="btn btn-sm btn-info">Detalhes</a>
             </td>
         </tr>
         {% empty %}

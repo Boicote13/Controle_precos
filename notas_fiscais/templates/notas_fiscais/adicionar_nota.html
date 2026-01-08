@@ -7,6 +7,16 @@
 </head>
 
 {% block content %}
+
+<script>
+    function myFunction() {
+        {% for item in formset %}
+        document.getElementById("itens-nota").innerHTML = `{{ item }}`;
+        {% endfor %}
+    }
+</script>
+
+
 <div class="page_content">
     <div style="display: flex; border: 2px solid rgb(77,101,77); background-color: rgba(77,101,77,70%); align-content: center; justify-content: center;">
     <p style="font-size: 25px;">Adicionar Nota Fiscal</p>
@@ -17,18 +27,24 @@
         <h3>Dados da Nota</h3>
         <div>
             <label for="id_numero">Numero:</label>
-            <input type="text" name="numero" class="form-control" maxlength="50" required id="id_numero">
+            <input type="text" name="numero" class="notas form-control" maxlength="50" required id="id_numero">
         </div>
 
         <div>
             <label for="id_data_emissao">Data emissao:</label>
-            <input type="date" name="data_emissao" class="form-control" required id="id_data_emissao">
+            <input type="date" name="data_emissao" class="notas form-control" required id="id_data_emissao">
         </div>
 
         <div>
             <label for="id_valor_total">Valor total:</label>
-            <input type="number" name="valor_total" value="0.0" class="form-control" step="0.01" required id="id_valor_total">             
+            <input type="number" name="valor_total" value="0.0" class="notas form-control" step="0.01" required id="id_valor_total">             
         </div>
+
+        <div>
+            <label for="id_total_items">Total items:</label>
+            <input type="number" name="total_items" value="1" class="notas form-control" required id="id_total_items">           
+        </div>
+
 
         <!-- Supermarket Selection -->
 
@@ -42,32 +58,28 @@
 
             <a href="{% url 'criar_supermercado' %}" class="btn btn-primary">Adicionar Mercado</a>
             
-            {% if form.supermercado.errors %}
-                <div class="alert alert-danger mt-2">
-                    {% for error in form.supermercado.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
-            
             <small class="form-text text-muted">
                 Selecione um supermercado da lista ou clique em "Adicionar Mercado" para cadastrar.
             </small>
         </div>
         
-
-        <h3>Itens da Nota</h3>
-        <div style="display: grid; grid-template-columns: repeat(5, 120px);">
-                {% for item in formset %}
-                    {{ item }}
-                {% endfor %}
-        </div>
-
-        <button type="button" class="btn btn-secondary mt-2" id="add-item">
-            + Adicionar Item
-        </button>
-        
         <button type="submit" class="btn btn-primary">Salvar Nota</button>
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Erro no formulário:</strong>
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
     </form>
 </div>
 

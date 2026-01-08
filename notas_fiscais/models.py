@@ -34,16 +34,16 @@ class Supermercado(models.Model):
 
 class NotaFiscal(models.Model):
     supermercado = models.ForeignKey(Supermercado, on_delete=models.CASCADE)
-    numero = models.CharField(max_length=50)
     data_emissao = models.DateField()
+    total_items = models.IntegerField(default=1)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2,  default=0.00)
-    # arquivo = models.FileField(upload_to='notas_fiscais/', blank=True, null=True)
     
     class Meta:
         verbose_name_plural = "Notas Fiscais"
+        ordering = ["-data_emissao"]
     
     def __str__(self):
-        return f"Nota {self.numero} - {self.supermercado}"
+        return f"Nota {self.pk} - {self.supermercado} - {self.data_emissao}"
 
 class CategoriaProduto(models.Model):
     nome = models.CharField(max_length=100)
@@ -51,19 +51,9 @@ class CategoriaProduto(models.Model):
     def __str__(self):
         return self.nome
 
-class Produto(models.Model):
-    nome = models.CharField(max_length=200)
-    # codigo_barras = models.CharField(max_length=50, blank=True, null=True)
-    categoria = models.ForeignKey(CategoriaProduto, on_delete=models.SET_NULL, null=True, blank=True)
-    # descricao = models.TextField(blank=True, null=True)
-    
-    def __str__(self):
-        return self.nome
-
 class ItemNotaFiscal(models.Model):
     nota_fiscal = models.ForeignKey(NotaFiscal, on_delete=models.CASCADE, related_name='itens')
-    item_num = models.IntegerField(max_length=100, default=0)
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    produto = models.CharField(max_length=50)
     quantidade = models.DecimalField(max_digits=10, decimal_places=3, default=0.00)
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     unidade_medida = models.CharField(max_length=20, default='un')
@@ -72,8 +62,15 @@ class ItemNotaFiscal(models.Model):
     def preco_total(self):
         return self.quantidade * self.preco_unitario
     
-    def __str__(self):
-        return f"{self.quantidade} x {self.produto} - {self.nota_fiscal}"
+    @property
+    def data_emissao(self):
+        return self.nota_fiscal.data_emissao
+    
+    class Meta:
+        ordering = ["-nota_fiscal__data_emissao"]
+    
+    #def __str__(self):
+    #    return f"{self.quantidade} x {self.produto} - {self.nota_fiscal}"
     
 
 

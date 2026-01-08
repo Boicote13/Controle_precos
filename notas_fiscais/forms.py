@@ -1,5 +1,5 @@
 from django import forms
-from .models import NotaFiscal, Supermercado, ItemNotaFiscal, Produto
+from .models import NotaFiscal, Supermercado, ItemNotaFiscal
 
 """
 class NotaFiscalForm(forms.ModelForm):
@@ -18,7 +18,7 @@ class NotaFiscalForm(forms.ModelForm):
 class ItemNotaFiscalForm(forms.ModelForm):
     class Meta:
         model = ItemNotaFiscal
-        fields = ['item_num', 'produto', 'quantidade', 'preco_unitario', 'unidade_medida']
+        fields = ['produto', 'quantidade', 'preco_unitario', 'unidade_medida']
         
 ItemNotaFiscalFormSet = forms.inlineformset_factory(
     NotaFiscal, 
@@ -70,12 +70,12 @@ class NotaFiscalForm(forms.ModelForm):
     
     class Meta:
         model = NotaFiscal
-        fields = ['numero', 'data_emissao', 'valor_total']
+        fields = ['data_emissao', 'valor_total', 'total_items']
         exclude = ['supermercado']
         widgets = {
             'data_emissao': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'numero': forms.TextInput(attrs={'class': 'form-control'}),
             'valor_total': forms.NumberInput(attrs={'class': 'form-control'}),
+            'total_items': forms.NumberInput(attrs={'class': 'form-control'}),
         }
     
     def __init__(self, *args, **kwargs):

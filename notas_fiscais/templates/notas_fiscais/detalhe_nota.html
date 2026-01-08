@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page_content">
+<h2>Detalhes da nota</h2>
+
+<div>
+    {{ nota_fiscal }}
+    {% for item in items_queryset %}
+    <table>
+        <thead>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Preço Unitário</th>
+            <th>ID Nota Fiscal</th>
+        </thead>
+        <tbody>
+            <td> {{ item.produto }}</td>
+            <td> {{ item.quantidade }}</td>
+            <td> {{ item.preco_unitario }}</td>
+            <td> {{ item.nota_fiscal_id }}</td>
+        {% endfor %}
+        </tbody>
+    </table>    
+</div>
+</div>
+{% endblock %}
