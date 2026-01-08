@@ -62,6 +62,7 @@ class Produto(models.Model):
 
 class ItemNotaFiscal(models.Model):
     nota_fiscal = models.ForeignKey(NotaFiscal, on_delete=models.CASCADE, related_name='itens')
+    item_num = models.IntegerField(max_length=100, default=0)
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     quantidade = models.DecimalField(max_digits=10, decimal_places=3, default=0.00)
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)

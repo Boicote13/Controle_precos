@@ -104,8 +104,21 @@ h3 {
     font-size: large;
 }
 
-/* Font elements */
+/* Forms */
 
+form.nota {
+    border: 5px;
+    background-color: rgba(117,123,143,70%);
+    padding: 10px;
+}
+
+div.items {
+    display: grid;
+}
+
+input {
+    width: 40px;
+}
 
 
 /*

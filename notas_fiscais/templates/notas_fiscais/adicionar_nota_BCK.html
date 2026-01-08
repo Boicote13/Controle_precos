@@ -55,17 +55,30 @@
             </small>
         </div>
         
-
-        <h3>Itens da Nota</h3>
-        <div style="display: grid; grid-template-columns: repeat(5, 120px);">
-                {% for item in formset %}
-                    {{ item }}
-                {% endfor %}
+        <div>
+            <h3>Itens da Nota</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço unitario</th>
+                        <th>Unidade medida</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mercado in supermercados %}
+                    <tr>
+                        <td>{{ mercado.nome }}</td>
+                        <td>{{ mercado.endereco }}</td>
+                    </tr>
+            {{ formset.management_form }}
+            {% for item_form in formset %}
+                <div class="item-form">
+                    {{ item_form.as_p }}
+                </div>
+            {% endfor %}
         </div>
-
-        <button type="button" class="btn btn-secondary mt-2" id="add-item">
-            + Adicionar Item
-        </button>
         
         <button type="submit" class="btn btn-primary">Salvar Nota</button>
     </form>

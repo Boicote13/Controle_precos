@@ -8,7 +8,7 @@ def adicionar_nota(request):
     supermercados = Supermercado.objects.filter().all()
 
     if request.method == 'POST':
-        form = NotaFiscalForm(request.POST, request.FILES)
+        form = NotaFiscalForm(request.POST)
         formset = ItemNotaFiscalFormSet(request.POST)
 
         #@TODO Otimizar essa ORM pra pegar só os nomes dos mercados
@@ -22,7 +22,21 @@ def adicionar_nota(request):
     else:
         form = NotaFiscalForm()
         formset = ItemNotaFiscalFormSet()
-        supermercados = Supermercado.objects.filter().all()
+        # supermercados = Supermercado.objects.filter().all()
+
+    """
+    for item in formset:
+        print(item)
+        print('+++++++++++++')
+        for field in item:
+            print(field.label)
+            print('+++++++++++++')
+        print('++++ END +++++')
+    print('%%%%%%%%%%%%%%')
+    """
+    
+    
+    # print([print(formitem) for formitem in formset])
     
     return render(request, 'notas_fiscais/adicionar_nota.html', {
         'supermercados' : supermercados,
