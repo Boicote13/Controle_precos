@@ -98,4 +98,11 @@ def lista_supermercados(request):
     return render(request, 'notas_fiscais/lista_supermercado.html', {'supermercados': supermercados})
 
 def home_page(request):
-    return render(request, 'notas_fiscais/home.html')
+
+    notas = NotaFiscal.objects.select_related().filter()[:10]
+
+    itens = ItemNotaFiscal.objects.all()[:10]
+
+    supermercado = Supermercado.objects.all()[:10]
+
+    return render(request, 'notas_fiscais/home.html', {'notas' : notas, 'itens' : itens, 'supermercado' : supermercado })

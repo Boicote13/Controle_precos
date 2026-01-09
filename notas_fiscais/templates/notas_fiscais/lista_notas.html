@@ -3,11 +3,11 @@
 {% block content %}
 <div class="page_content">
 <h2>Notas Fiscais Cadastradas</h2>
-<a href="{% url 'adicionar_nota' %}" class="btn btn-success mb-3">Adicionar Nova Nota</a>
+<a href="{% url 'adicionar_nota' %}" class="add">Nova Nota +</a>
 
 <table class="table">
     <thead>
-        <tr>
+        <tr class="header">
             <th>Supermercado</th>
             <th>Data</th>
             <th>Valor Total</th>

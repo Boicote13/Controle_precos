@@ -55,22 +55,41 @@ div.icons {
 /* Home page Elements */
 
 .block {
-    background-color: rgb(117,123,143);
+    background-color: rgb(164,71,65);
     padding: 30px 10px;
     display: grid;
     margin-bottom: 30px;
     align-content: center;
     justify-content: space-evenly;
+    border-radius: 50px;
 }
 
 .inside_block {
+    display: grid;
+    justify-content: center;
     position: relative;
     margin: 25px;
-    padding: 10px;
+    padding: 40px;
     background-color: rgb(234,221,198);
-    width: 750px;
-    height: 500px;
+    /* width: 750px;
+     height: 500px; */
     border-radius: 50px
+}
+
+th, td {
+    border: solid black;
+    border-width: 2px;
+    padding: 5px;
+    /* border-radius: 15px */
+}
+
+th {
+    color: white;
+    margin: 0px;
+}
+
+tr.header {
+    background-color: rgb(77,101,77)
 }
 
 
@@ -86,11 +105,14 @@ h1 {
 }
 
 h2 {
-    color:black;
+    color:white;
+    background-color: rgb(77,101,77);
     font-size: 20px;
     padding: 23px;
-    /* margin-left: 400px; */
-    width: 200px;
+    border-radius: 15px;
+    width: 400px;
+    display: grid;
+    justify-content: center;
 }
 
 h3 {
@@ -116,6 +138,15 @@ input.notas {
 
 input {
     width: 40px;
+}
+
+
+/* buttons */
+
+a.add {
+    font-weight: bold;
+    color: rgb(164,71,65);
+    width: 200px;
 }
 
 

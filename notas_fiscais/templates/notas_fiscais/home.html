@@ -6,10 +6,24 @@
     <div class="block">
         <h1> Notas </h1>
         <div class="inside_block">
-        <p>
-            Paragrfo dentro de inside_block
-        </p>
-
+            <table>
+                <thead>
+                    <tr class="header">
+                        <th>Data emissão</th>
+                        <th>Supermercado</th>
+                        <th>R$ Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% for nota in notas %}
+                        <td> {{ nota.data_emissao }} </td>
+                        <td> {{ nota.supermercado }} </td>
+                        <td> {{ nota.valor_total }} </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
