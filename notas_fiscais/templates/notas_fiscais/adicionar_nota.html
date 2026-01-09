@@ -18,9 +18,8 @@
 
 
 <div class="page_content">
-    <div style="display: flex; border: 2px solid rgb(77,101,77); background-color: rgba(77,101,77,70%); align-content: center; justify-content: center;">
-    <p style="font-size: 25px;">Adicionar Nota Fiscal</p>
-    </div>
+    <h2>Adicionar Nota Fiscal</h2>
+
     <form class="nota" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         
@@ -48,7 +47,7 @@
 
         <!-- Supermarket Selection -->
 
-        <div style="display: grid; justify-items: start" grid-template-columns="200px 200px 50px" >
+        <div style="display: grid; justify-items: center" grid-template-columns="200px 200px 50px" >
             <label for="supermercado-input"> Escolha um supermercado: </label>
             <select id="{{ form.supermercado_nome }}" name="Supermercado">
                 {% for item in supermercados %}
@@ -56,14 +55,14 @@
             {% endfor %}
             </select>
 
-            <a href="{% url 'criar_supermercado' %}" class="btn btn-primary">Adicionar Mercado</a>
+            <a href="{% url 'criar_supermercado' %}" class="add btn btn-primary">Adicionar Mercado +</a>
             
             <small class="form-text text-muted">
                 Selecione um supermercado da lista ou clique em "Adicionar Mercado" para cadastrar.
             </small>
         </div>
         
-        <button type="submit" class="btn btn-primary">Salvar Nota</button>
+        <button type="submit" class="btn btn-primary">Avançar >></button>
 
         {% if form.errors %}
             <div class="alert alert-danger">

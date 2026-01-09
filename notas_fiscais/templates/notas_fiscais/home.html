@@ -15,8 +15,8 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for nota in notas %}
                     <tr>
-                        {% for nota in notas %}
                         <td> {{ nota.data_emissao }} </td>
                         <td> {{ nota.supermercado }} </td>
                         <td> {{ nota.valor_total }} </td>
@@ -30,20 +30,42 @@
     <div class="block">
         <h1> Items </h1>
         <div class="inside_block">
-        <p>
-            Paragrfo dentro de inside_block
-        </p>
-
+            <table>
+                <thead>
+                    <tr class="header">
+                        <th>Produto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td> {{ item.produto }} </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
     <div class="block">
         <h1> Supermercados </h1>
         <div class="inside_block">
-        <p>
-            Paragrfo dentro de inside_block
-        </p>
-
+            <table>
+                <thead>
+                    <tr class="header">
+                        <th>Mercado</th>
+                        <th>Num. Notas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for mercado, num in data.items %}
+                    <tr>
+                        <td> {{ mercado }} </td>
+                        <td> {{ num }} </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

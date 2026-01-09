@@ -3,15 +3,27 @@
 {% block content %}
 
 <!-- Formulario do modelform do Supermercado -->
+<div class="page_content">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <h3> Dados do Supermercado </h3>
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <h3> Dados do Supermercado </h3>
-    {{ form.as_p }}
+        <div>
+            <label for="id_nome">Nome:</label>
+            <input type="text" name="nome" class="form-control" placeholder="Nome do supermercado" maxlength="100" required id="id_nome" style="width: max-content;">
+        </input>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Salvar mercado</button>
+        <div>
+            <label for="id_endereco">Endereco:</label>
+            <input type="text" name="endereco" class="form-control" placeholder="Endereço (Nome da rua, número. Cidade.)" id="id_endereco" style="width: 400px;">
+            </input>     
+        </div>
 
-</form>
+        <button type="submit" class="btn btn-primary">Salvar mercado</button>
+
+    </form>
+</div>
 
 {% endblock %}

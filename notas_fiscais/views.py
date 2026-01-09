@@ -78,6 +78,8 @@ def criar_supermercado(request):
             return redirect('lista_mercado') 
     else:
         form = SupermercadoForm()
+
+    # print(form)
     
     return render(request, 'notas_fiscais/criar_supermercado.html', {
         'form': form,
@@ -101,8 +103,14 @@ def home_page(request):
 
     notas = NotaFiscal.objects.select_related().filter()[:10]
 
-    itens = ItemNotaFiscal.objects.all()[:10]
+    items = ItemNotaFiscal.objects.all()[:10]
 
-    supermercado = Supermercado.objects.all()[:10]
+    mercado_data = {}
+    
+    for mercado in Supermercado.objects.all()[:10]:
 
-    return render(request, 'notas_fiscais/home.html', {'notas' : notas, 'itens' : itens, 'supermercado' : supermercado })
+        qs_notas_mercadoX = NotaFiscal.objects.filter(supermercado=mercado.id)
+
+        mercado_data[mercado.nome] = len(qs_notas_mercadoX)
+
+    return render(request, 'notas_fiscais/home.html', {'notas' : notas, 'items' : items, 'data' : mercado_data })
