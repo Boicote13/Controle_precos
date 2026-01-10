@@ -2,6 +2,7 @@
 
 body {
     margin: 0px;
+    background-color: rgb(234,221,198);
 }
 
 nav {
@@ -88,6 +89,10 @@ th {
 
 tr.header {
     background-color: rgb(77,101,77)
+}
+
+tbody {
+    background-color: white
 }
 
 

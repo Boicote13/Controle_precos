@@ -9,6 +9,14 @@
 
 > - Data generation CRUD interface está funcionando em todos os níveis: items, nota fiscal e supermercado.
 
-> - Página inicial precisa ser feita ainda, resumo simples de notas, itens e supermerados. Quem vai pesar é a view.
+> - CRUD básico está pronto, já tem dados de mentira populados
 
+> - Ainda é necessário gerar o campo "Categoria" para produto. Ideia é treinar um modelo de IA para predizer a categoria baseado no nome do produto.
+>> - Categorias:
+>> 1. alimento
+>> 2. bebida
+>> 3. higiene
+>> 4. limpeza
+>> 5. outros
 
+> - Se der certo a ideia é fazer outra IA pra subcategorias de alimento (parte nutricional: carboidratos, proteínas, lipidios, fibras)

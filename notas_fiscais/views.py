@@ -102,8 +102,8 @@ def lista_supermercados(request):
 def home_page(request):
 
     notas = NotaFiscal.objects.select_related().filter()[:10]
-
-    items = ItemNotaFiscal.objects.all()[:10]
+    
+    items = ItemNotaFiscal.objects.order_by("nota_fiscal__data_emissao")[:10]
 
     mercado_data = {}
     

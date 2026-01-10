@@ -34,12 +34,16 @@
                 <thead>
                     <tr class="header">
                         <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in items %}
-                    <tr>
+                    <tr class="tbody">
                         <td> {{ item.produto }} </td>
+                        <td> {{ item.quantidade }} </td>
+                        <td> {{ item.preco_total }} </td>
                     </tr>
                     {% endfor %}
                 </tbody>
