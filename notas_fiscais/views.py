@@ -56,7 +56,7 @@ def detalhe_nota(request, nota_id):
 
     nota_fiscal = get_object_or_404(NotaFiscal, id=nota_id)
 
-    items = ItemNotaFiscal.objects.filter(nota_fiscal=nota_fiscal).values()
+    items = ItemNotaFiscal.objects.filter(nota_fiscal=nota_fiscal)
     
     return render(request, 'notas_fiscais/detalhe_nota.html', {
         'nota_fiscal' : nota_fiscal,

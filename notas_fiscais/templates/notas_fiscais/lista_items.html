@@ -8,7 +8,9 @@
         <thead>
             <tr class="header">
                 <th>Nome do produto</th>
-                <th>Preço</th>
+                <th>Quantidade</th>
+                <th>Preço Unidade/Kg</th>
+                <th>Preço Total</th>
                 <th>Data</th>
                 <th>Nota Fiscal</th>
             </tr>
@@ -17,13 +19,15 @@
             <tr>
             {% for item in items %}
                 <td> {{ item.produto }} </td>
+                <td> {{ item.quantidade }} </td>
                 <td> {{ item.preco_unitario }} </td>
+                <td> {{ item.preco_total }} </td>
                 <td> {{ item.data_emissao }} </td>
                 <td> {{ item.nota_fiscal_id }} </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="3">Nenhuma nota cadastrada ainda.</td>
+                <td colspan="3">Nenhum item cadastrado ainda.</td>
             </tr>
             {% endfor %}
         </tbody>

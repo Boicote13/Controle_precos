@@ -10,9 +10,8 @@
         <thead>
             <tr class="header">
                 <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Preço Unitário</th>
-                <th>ID Nota Fiscal</th>
+                <th>Quantidade Un/Kg</th>
+                <th>Preço Total do Item R$</th>
             </tr>
         </thead>
         {% for item in items_queryset %}
@@ -20,8 +19,7 @@
             <tr>
                 <td> {{ item.produto }}</td>
                 <td> {{ item.quantidade }}</td>
-                <td> {{ item.preco_unitario }}</td>
-                <td> {{ item.nota_fiscal_id }}</td>
+                <td> {{ item.preco_total|stringformat:".2f" }}</td>
             </tr>
         </tbody>
         {% endfor %}

@@ -6,6 +6,12 @@ class Supermercado(models.Model):
     
     def __str__(self):
         return f'{self.nome}'
+    
+# class CategoriaProduto(models.Model):
+#     nome = models.CharField(max_length=100)
+    
+#     def __str__(self):
+#         return f'{self.nome}'
 
 class NotaFiscal(models.Model):
     supermercado = models.ForeignKey(Supermercado, on_delete=models.CASCADE)
@@ -24,9 +30,19 @@ class NotaFiscal(models.Model):
 class ItemNotaFiscal(models.Model):
     nota_fiscal = models.ForeignKey(NotaFiscal, on_delete=models.CASCADE, related_name='itens')
     produto = models.CharField(max_length=50)
-    quantidade = models.DecimalField(max_digits=10, decimal_places=3, default=0.00)
+    quantidade = models.DecimalField(max_digits=10, decimal_places=3, default=1.00)
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    unidade_medida = models.CharField(max_length=20, default='un')
+    unidade_medida = models.CharField(max_length=20, default='un', choices={'un':'unidade', 'kg':'kilograma'})
+
+    class Categorias(models.TextChoices):
+        ALIMENTO = "alimento"
+        BEBIDA = "bebida"
+        HIGIENE = "higiene"
+        LIMPEZA = "limpeza"
+        OUTROS = "outros"
+        TEST = "test"
+
+    categoria = models.TextField(choices=Categorias)
     
     @property
     def preco_total(self):
@@ -42,11 +58,7 @@ class ItemNotaFiscal(models.Model):
     def __str__(self):
         return f"{self.quantidade} x {self.produto} - {self.nota_fiscal}"
     
-class CategoriaProduto(models.Model):
-    categoria = models.CharField(max_length=100)
-    
-    def __str__(self):
-        return f'{self.categoria}'
+
 
     
 

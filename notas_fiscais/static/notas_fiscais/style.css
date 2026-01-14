@@ -27,9 +27,11 @@ a.nav {
     color: white;
 }
 
-a:hover {
+a.nav:hover {
     background-color: rgb(234,221,198);
     color: rgb(77,101,77);
+    box-shadow: 10px 10px 5px;
+    border: 5px outset;
 }
 
 
@@ -140,9 +142,11 @@ input.notas {
     width: max-content;
 }
 
-input {
-    width: 40px;
+input, select {
+    width: 110px;
 }
+
+
 
 
 /* buttons */
@@ -152,6 +156,7 @@ a.add {
     color: rgb(164,71,65);
     margin: 5px;
     display: inline-flex;
+    width: 150px;
 }
 
 button {

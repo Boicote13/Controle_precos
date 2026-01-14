@@ -18,16 +18,7 @@ class NotaFiscalForm(forms.ModelForm):
 class ItemNotaFiscalForm(forms.ModelForm):
     class Meta:
         model = ItemNotaFiscal
-        fields = ['produto', 'quantidade', 'preco_unitario', 'unidade_medida']
-        
-ItemNotaFiscalFormSet = forms.inlineformset_factory(
-    NotaFiscal, 
-    ItemNotaFiscal,
-    form=ItemNotaFiscalForm,
-    exclude=['supermercado'],
-    extra=3,
-    can_delete=False
-)
+        fields = ['produto', 'quantidade', 'preco_unitario', 'unidade_medida', 'categoria']
 
 """
 Daqui pra baixo é deepseek
