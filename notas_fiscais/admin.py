@@ -14,6 +14,12 @@ class NotaFiscalAdmin(admin.ModelAdmin):
     list_filter = ('supermercado', 'data_emissao')
     search_fields = ['supermercado__nome']
 
+# class ItemNotaFiscalAdmin(admin.ModelAdmin):
+#     inlines = [ItemNotaFiscalInline]
+#     list_display = ('supermercado', 'data_emissao', 'valor_total')
+#     list_filter = ('supermercado', 'data_emissao')
+#     search_fields = ['supermercado__nome']
+
 admin.site.register(Supermercado)
 #admin.site.register(CategoriaProduto)
 #admin.site.register(Produto)

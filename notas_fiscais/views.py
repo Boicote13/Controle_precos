@@ -109,8 +109,14 @@ def home_page(request):
     
     for mercado in Supermercado.objects.all()[:10]:
 
-        qs_notas_mercadoX = NotaFiscal.objects.filter(supermercado=mercado.id)
+        #qs_notas_mercadoX = NotaFiscal.objects.filter(supermercado=mercado.id)
+        print(f'mercado -> {mercado}')
+        print(f'mercado.id -> {mercado.id}\ntype(mercado.id) -> {type(mercado.id)}')
 
-        mercado_data[mercado.nome] = len(qs_notas_mercadoX)
+        print(len(NotaFiscal.objects.filter(supermercado=mercado.id)))
+
+        #print(qs_notas_mercadoX)
+
+        mercado_data[mercado.nome] = len(NotaFiscal.objects.filter(supermercado=mercado.id))
 
     return render(request, 'notas_fiscais/home.html', {'notas' : notas, 'items' : items, 'data' : mercado_data })
