@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
 
-import time
 from pathlib import Path
 import datetime
 from typing import Union, Dict, List
@@ -8,13 +7,11 @@ from typing import Union, Dict, List
 from decimal import Decimal, getcontext
 
 from bs4 import BeautifulSoup
-from peewee import *
+from peewee import SqliteDatabase
 from playhouse.reflection import generate_models
 
-# from settings import *
+from settings import *
 
-NOTA_TITLE = 'DOCUMENTO AUXILIAR DA NOTA FISCAL DE CONSUMIDOR ELETRÔNICA'
-# import pandas as pd
 
 getcontext().prec = 3
 
@@ -36,20 +33,21 @@ class DatabaseOperations:
         self._db.connect()
         models = generate_models(self._db)
         globals().update(models)
-
+        
 
     def check_datatypes(self, *args, **kwargs) -> bool:
 
         if kwargs:
-            if isinstance(
-                kwargs["data_emissao"], datetime.date
-            ) and isinstance(kwargs["valor_total"], Decimal) and isinstance(
-                kwargs["total_items"], int
-            ) and isinstance(kwargs["supermercado_id"], int):
-                
-                print("NotaFiscal data types OK.")
+            if (
+                isinstance(kwargs['data_emissao'], datetime.date)
+                and isinstance(kwargs['valor_total'], Decimal)
+                and isinstance(kwargs['total_items'], int)
+                and isinstance(kwargs['supermercado_id'], tuple)
+            ):
+
+                print('NotaFiscal data types OK.')
                 return True
-                
+
             else:
                 print(
                     f'data_emissao in memory: {kwargs["data_emissao"]} -> type: {type(kwargs["data_emissao"])}'
@@ -63,11 +61,12 @@ class DatabaseOperations:
                 print(
                     f'supermercado_id in memory: {kwargs["supermercado_id"]} -> type: {type(kwargs["supermercado_id"])}'
                 )
-                print("Check datatypes for data_emissao and valor_total")
+                print('Check datatypes for data_emissao and valor_total')
 
                 return False
-        
+
         if args:
+
             for cada in args:
 
                 if (
@@ -75,7 +74,7 @@ class DatabaseOperations:
                     and isinstance(cada['preco_unitario'], Decimal)
                     and isinstance(cada['produto'], str)
                 ):
-                    
+
                     print('ItemNotaFiscal data types OK.')
                     return True
 
@@ -92,195 +91,226 @@ class DatabaseOperations:
                     print(
                         f'produto in memory: {cada["produto"]} -> type: {type(cada["produto"])}'
                     )
-                    print("Error in data types for the ItemNotaFiscal Model")
+                    print('Error in data types for the ItemNotaFiscal Model')
                     return False
-                
+
     def insert_nota2db(
-            self,
-            nota_infos: Dict[str, Union[float, str, Decimal]],
-        ) -> int:
+        self,
+        nota_infos: Dict[str, Union[float, str, Decimal]],
+        mercado_id: int
+    ) -> int:
 
         nota_query = notas_fiscais_notafiscal.insert(
             data_emissao=nota_infos['data_emissao'],
             valor_total=nota_infos['valor_total'],
             total_items=nota_infos['total_items'],
-            supermercado_id=nota_infos['supermercado_id'],
+            supermercado_id=mercado_id,
         )
 
         nota_id = nota_query.execute()
 
         return nota_id
 
-    def insert_items2db(self, items_infos: List[Dict[str, Union[str, int, Decimal]]]) -> None:
+    def insert_items2db(
+        self, items_infos: List[Dict[str, Union[str, int, Decimal]]]
+    ) -> None:
         notas_fiscais_itemnotafiscal.insert_many(items_infos).execute()
 
-def get_html(html_path) -> Union[BeautifulSoup, None]:
-    with open(html_path, 'r') as file:
-        soup = BeautifulSoup(file, 'html.parser')
-        print(soup.find('title').get_text(strip=True))
-        if soup.find('title').get_text(strip=True) == NOTA_TITLE:
-            return soup
+    def get_or_create_supermercado(self, name_adress: tuple[str, str]) -> int:
+
+        name, adress = name_adress
+
+        mercado, created = notas_fiscais_supermercado.get_or_create(
+            nome=name, endereco=adress
+        )
+
+        print(f'mercado -> {mercado}\ncreated -> {created}')
+
+        return mercado
+
+
+class HtmlAnalyser:
+
+    def __init__(self, htmlfile: str) -> None:
+        self.htmlfile = htmlfile
+        self.validate_content()
+
+    @property
+    def htmlfile(self):
+        return self._htmlfile
+
+    @htmlfile.setter
+    def htmlfile(self, html_path):
+        with open(html_path, 'r') as file:
+            self._htmlfile = BeautifulSoup(file, 'html.parser')
+
+    def validate_content(self):
+        if self._htmlfile.find('title').get_text(strip=True) in NOTA_TITLE:
+            return True
         else:
             print('The HTML content of this file is not the expected...')
-            return None
+            return False
 
 
-def obtain_notas_data(hmtl_content: BeautifulSoup) -> Dict[str, Union[float, str, Decimal]]:
+    def obtain_notas_data(self) -> Dict[str, Union[float, str, Decimal]]:
 
-    dados_nota = {
-        'valor_total': Decimal(),
-        'data_emissao': '',
-        'supermercado_id': int(),
-        'total_items': int,
-    }
-    
-    spans = hmtl_content.select('div.txtCenter')[0]
-    for i in spans.find_all('div')[-1]:
-        endereco_nota = i.replace('\n', '').replace('\t', '')
-
-    supermercado_nome = hmtl_content.find(id='u20').string
-    print(supermercado_nome)
-
-    mercado, created = notas_fiscais_supermercado.get_or_create(
-        nome=supermercado_nome, endereco=endereco_nota
-    )
-
-    print(f'mercado -> {mercado}\ncreated -> {created}')
-
-    dados_nota['supermercado_id'] = int(mercado.id)
-
-    for div in hmtl_content.find('div', id='totalNota'):
-        try:
-            if div.label.string == 'Valor a pagar R$:':
-                div.span.string.replace(',', '.')
-                dados_nota['valor_total'] = Decimal(
-                    div.span.string.replace(',', '.')
-                )
-            elif div.label.string == 'Qtd. total de itens:':
-                dados_nota['total_items'] = div.span.string
-
-        except AttributeError:
-            continue
-
-    for strong in hmtl_content.find('li').find_all('strong'):
-        if strong.string == ' Emissão: ':
-            dados_nota['data_emissao'] = datetime.datetime.strptime(
-                strong.next_sibling.string.split(' ')[0], '%d/%m/%Y'
-            ).date()
-
-    print(dados_nota)
-    return dados_nota
-    ...
-
-def obtain_items_data(nota: int, html_content: BeautifulSoup) -> List[Dict[str, Union[str, int, Decimal]]]:
-    lista_dados_nota = []
-
-    for itens in html_content.find('table').find_all('tr'):
-        itens_data = {
-            'nota_fiscal': nota,
-            'produto': '',
-            'quantidade': Decimal(),
-            'preco_unitario': Decimal(),
-            'unidade_medida': '',
-            'categoria': '',
+        dados_nota = {
+            'valor_total': Decimal(),
+            'data_emissao': '',
+            'supermercado_id': tuple(),
+            'total_items': int,
         }
-        itens_data['produto'] = itens.select('span.txtTit2')[
-            0
-        ].string.lower()
-        itens_data['quantidade'] = Decimal(
-            float(
-                itens.select('span.Rqtd')[0]
+
+        spans = self._htmlfile.select('div.txtCenter')[0]
+        for i in spans.find_all('div')[-1]:
+            endereco_nota = i.replace('\n', '').replace('\t', '')
+
+        supermercado_nome = self._htmlfile.find(id='u20').string
+        print(supermercado_nome)
+
+
+
+        dados_nota['supermercado_id'] = (supermercado_nome, endereco_nota)
+
+        for div in self._htmlfile.find('div', id='totalNota'):
+            try:
+                if div.label.string == 'Valor a pagar R$:':
+                    div.span.string.replace(',', '.')
+                    dados_nota['valor_total'] = Decimal(
+                        div.span.string.replace(',', '.')
+                    )
+                elif div.label.string == 'Qtd. total de itens:':
+                    dados_nota['total_items'] = int(div.span.string)
+
+            except AttributeError:
+                continue
+
+        for strong in self._htmlfile.find('li').find_all('strong'):
+            if strong.string == ' Emissão: ':
+                dados_nota['data_emissao'] = datetime.datetime.strptime(
+                    strong.next_sibling.string.split(' ')[0], '%d/%m/%Y'
+                ).date()
+
+        return dados_nota
+
+
+    def obtain_items_data(self, nota: int) -> List[Dict[str, Union[str, int, Decimal]]]:
+        lista_dados_nota = []
+
+        for itens in self._htmlfile.find('table').find_all('tr'):
+            itens_data = {
+                'nota_fiscal': nota,
+                'produto': '',
+                'quantidade': Decimal(),
+                'preco_unitario': Decimal(),
+                'unidade_medida': '',
+                'categoria': '',
+            }
+            itens_data['produto'] = itens.select('span.txtTit')[0].string.lower()
+            itens_data['quantidade'] = Decimal(
+                float(
+                    itens.select('span.Rqtd')[0]
+                    .get_text(strip=True)
+                    .split(':')[-1]
+                    .replace(',', '.')
+                )
+            )
+            itens_data['unidade_medida'] = (
+                itens.select('span.RUN')[0]
+                .get_text(strip=True)
+                .split(':')[-1]
+                .lower()
+            )
+            itens_data['preco_unitario'] = Decimal(
+                itens.select('span.RvlUnit')[0]
                 .get_text(strip=True)
                 .split(':')[-1]
                 .replace(',', '.')
             )
-        )
-        itens_data['unidade_medida'] = (
-            itens.select('span.RUN')[0]
-            .get_text(strip=True)
-            .split(':')[-1]
-            .lower()
-        )
-        itens_data['preco_unitario'] = Decimal(
-            itens.select('span.RvlUnit')[0]
-            .get_text(strip=True)
-            .split(':')[-1]
-            .replace(',', '.')
-        )
 
-        lista_dados_nota.append(itens_data)
+            lista_dados_nota.append(itens_data)
 
-    print(lista_dados_nota)
-    return lista_dados_nota
-    ...
+        return lista_dados_nota
 
-def organize_files(path2files: Path) -> List[Path]:
-    #path2files = Path('/home/gustavo/Documentos/notas/')
-    files2read = []
-    for html_file in path2files.glob('*.html'):
-        temp_name = datetime.datetime.now().isoformat().split('.')[-1]
-        new = html_file.parent.joinpath(f'nota_{temp_name}.html')
-        html_file.rename(new)
-        files2read.append(new)
-        # print(html_file)
-    path2files.joinpath('notas_processadas').mkdir(exist_ok=True)
-    path2files.joinpath('notas_nao_processadas').mkdir(exist_ok=True)
-    return files2read
+class FileManager:
+    def __init__(self, path2notes):
+        self.path2notes = path2notes
+
+    @property
+    def path2notes(self) -> Path:
+        return self._path2notes
+
+    @path2notes.setter
+    def path2notes(self, path) -> None:
+        if Path(path).is_dir():
+            self._path2notes = Path(path)
+        else:
+            raise NotADirectoryError
+
+    def list_files(self) -> List[Path]:
+        
+        files2read = []
+
+        for html_file in self.path2notes.glob('*.html'):
+            temp_name = datetime.datetime.now().isoformat().split('.')[-1]
+            new = html_file.parent.joinpath(f'nota_{temp_name}.html')
+            html_file.rename(new)
+            files2read.append(new)
+        
+        self.path2notes.joinpath('notas_processadas').mkdir(exist_ok=True)
+        self.path2notes.joinpath('notas_nao_processadas').mkdir(exist_ok=True)
+
+        return files2read
 
 
-def move_file_after_parsing(file_path: Path, processed: bool = True):
-    if processed:
-        target_processed = Path(
-            f'/home/gustavo/Documentos/notas/notas_processadas/pro_{file_path.name}'
-        )
-        file_path.rename(target_processed)
-    else:
-        target_nonprocessed = Path(
-            f'/home/gustavo/Documentos/notas/notas_processadas/pro_{file_path.name}'
-        )
-        file_path.rename(target_nonprocessed)
-
+    def move_file_after_parsing(self, file_path: Path, processed: bool = True):
+        if processed:
+            target_processed = self._path2notes.joinpath("notas_processadas", f'pro_{file_path.name}')
+            file_path.rename(target_processed)
+        else:
+            target_nonprocessed = self._path2notes.joinpath("notas_nao_processadas", f'pro_{file_path.name}')
+            file_path.rename(target_nonprocessed)
 
 
 def main(local) -> None:
+    # DATABASES["default"]["NAME"]
     db_ops = DatabaseOperations('/home/gustavo/controle_precos/db.sqlite3')
 
-    files_list = organize_files(Path(local))
+    manager = FileManager(local)
+
+    files_list = manager.list_files()
 
     for file in files_list:
 
-        soup = get_html(file)
+        soup = HtmlAnalyser(htmlfile=file)
 
-        print(type(soup))
-        if soup:
-            dados_nota = obtain_notas_data(hmtl_content=soup)
-            if db_ops.check_datatypes(dados_nota):
-                nota_id = db_ops.insert_nota2db(nota_infos=dados_nota)
+        if soup.validate_content() == True:
 
-            dados_items = obtain_items_data(nota=nota_id, html_content=soup)
+            dados_nota = soup.obtain_notas_data()
 
-            if db_ops.check_datatypes(dados_items):
+            if db_ops.check_datatypes(**dados_nota):
+
+                mercado = db_ops.get_or_create_supermercado(name_adress=dados_nota["supermercado_id"])
+                nota_id = db_ops.insert_nota2db(nota_infos=dados_nota, mercado_id=mercado)
+
+            dados_items = soup.obtain_items_data(nota=nota_id)
+
+            if db_ops.check_datatypes(*dados_items):
+
                 db_ops.insert_items2db(dados_items)
-        
-            db_ops.db.close()
+
+            manager.move_file_after_parsing(file)
+
         else:
-            print("skipping file...")
-            
 
+            print(file)
+            print('skipping file...')
+            manager.move_file_after_parsing(file, processed=False)
+            print('\n\n')
     
-
-        
-
-        
-
-        
-
-        
-
-        
+    db_ops.db.close()
 
 
 if __name__ == '__main__':
-    ...
-    main("/home/gustavo/Documentos/notas/")
-    
+    #main('/home/gustavo/Documentos/notas/')
+    print('oi')
