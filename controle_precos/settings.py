@@ -12,6 +12,31 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
+NOTA_TITLE = [
+    "DOCUMENTO AUXILIAR DA NOTA FISCAL DE CONSUMIDOR ELETRÔNICA",
+    "DF-e Portal/Pr - Consulta DANFE NFC-e",
+]
+
+REGEX_LIST = [
+    "[0-9]? ?[kK][gG]", "[0-9],[0-9]+ ?[kK][gG]", "[0-9]+ ?[gG]",
+    "[0-9]+\.[0-9]+ ?[gG]", "[0-9]+ ?[mM][lL]", "[0-9]+ ?[lL]",
+    "[0-9]+ ?[uU]{1}[nN]{1}", "[0-9]+ ?[uU]nidades?", "[0-9]+ ?[sS]achês?",
+    "[0-9]+ [rR]olos? ?", "[0-9]+ [mM]etros? ?", "[lL]eve [0-9]+ [pP]ague [0-9]+",
+    "[0-9]+ [rR]efis", "[rR]efil", "[0-9]+[cm]?x[0-9]+[cm]?"
+]
+
+CATEGORY_DICT = {
+    1 : "Alimento",
+    2 : "Bebida",
+    3 : "Higiene",
+    4 : "Limpeza",
+    5 : "Outros",
+}
+
+TRAINING_SET = Path("/home/gustavo/Documentos/items_cat_uniq.csv")
+
+MODEL = ""
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -105,9 +130,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 

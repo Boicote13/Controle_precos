@@ -1,3 +1,0 @@
-#! /usr/bin/env python3
-
-NOTA_TITLE = ["DOCUMENTO AUXILIAR DA NOTA FISCAL DE CONSUMIDOR ELETRÔNICA", "DF-e Portal/Pr - Consulta DANFE NFC-e"]

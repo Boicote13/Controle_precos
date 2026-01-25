@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+<!DOCTYPE html>
+{% load static %}
+<head>
+<link rel="stylesheet" href="{% static 'notas_fiscais/style.css' %}">
+</head>
+
+{% block content %}
+
+<div class="page_content">
+    <h2>Adicionar Nota Fiscal via arquivo</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <!-- <input type="file" name="myfile"> -->
+        <button type="submit">Upload</button>
+    </form>    
+</div>
+
+<!-- Adicione JavaScript para adicionar mais itens dinamicamente se necessário -->
+{% endblock %}

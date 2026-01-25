@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from pathlib import Path
 import datetime
 from typing import Union, Dict, List
@@ -10,7 +11,8 @@ from bs4 import BeautifulSoup
 from peewee import SqliteDatabase
 from playhouse.reflection import generate_models
 
-from settings import *
+from controle_precos.settings import *
+from .model4category import CategoryGuesser
 
 
 getcontext().prec = 3
@@ -33,7 +35,6 @@ class DatabaseOperations:
         self._db.connect()
         models = generate_models(self._db)
         globals().update(models)
-        
 
     def check_datatypes(self, *args, **kwargs) -> bool:
 
@@ -97,7 +98,7 @@ class DatabaseOperations:
     def insert_nota2db(
         self,
         nota_infos: Dict[str, Union[float, str, Decimal]],
-        mercado_id: int
+        mercado_id: int,
     ) -> int:
 
         nota_query = notas_fiscais_notafiscal.insert(
@@ -130,19 +131,42 @@ class DatabaseOperations:
 
 
 class HtmlAnalyser:
-
-    def __init__(self, htmlfile: str) -> None:
+    def __init__(
+        self, htmlfile: Union[str, InMemoryUploadedFile] = None
+    ) -> None:
         self.htmlfile = htmlfile
-        self.validate_content()
+        self.guesser = CategoryGuesser()
 
     @property
     def htmlfile(self):
         return self._htmlfile
 
     @htmlfile.setter
-    def htmlfile(self, html_path):
-        with open(html_path, 'r') as file:
-            self._htmlfile = BeautifulSoup(file, 'html.parser')
+    def htmlfile(self, html_path) -> Union[BeautifulSoup, None]:
+        if isinstance(html_path, str):
+            with open(html_path, 'r') as file:
+                self._htmlfile = BeautifulSoup(file, 'html.parser')
+        elif isinstance(html_path, InMemoryUploadedFile):
+            self._htmlfile = BeautifulSoup(
+                html_path.open().read().decode('utf-8'), 'html.parser'
+            )
+        else:
+            print("Check the type for the html element to be analyzed.")
+            print(f'Type passed to the setter: -> {type(html_path)}')
+            self._htmlfile = None
+
+    @property
+    def guesser(self):
+        return self._guesser
+
+    @guesser.setter
+    def guesser(self, model):
+        if MODEL == '':
+            self._guesser = model
+            self._guesser.train_model(TRAINING_SET)
+        else:
+            print('Model selected from...')
+            pass
 
     def validate_content(self):
         if self._htmlfile.find('title').get_text(strip=True) in NOTA_TITLE:
@@ -150,7 +174,6 @@ class HtmlAnalyser:
         else:
             print('The HTML content of this file is not the expected...')
             return False
-
 
     def obtain_notas_data(self) -> Dict[str, Union[float, str, Decimal]]:
 
@@ -167,8 +190,6 @@ class HtmlAnalyser:
 
         supermercado_nome = self._htmlfile.find(id='u20').string
         print(supermercado_nome)
-
-
 
         dados_nota['supermercado_id'] = (supermercado_nome, endereco_nota)
 
@@ -193,8 +214,9 @@ class HtmlAnalyser:
 
         return dados_nota
 
-
-    def obtain_items_data(self, nota: int) -> List[Dict[str, Union[str, int, Decimal]]]:
+    def obtain_items_data(
+        self, nota: int
+    ) -> List[Dict[str, Union[str, int, Decimal]]]:
         lista_dados_nota = []
 
         for itens in self._htmlfile.find('table').find_all('tr'):
@@ -206,7 +228,14 @@ class HtmlAnalyser:
                 'unidade_medida': '',
                 'categoria': '',
             }
-            itens_data['produto'] = itens.select('span.txtTit')[0].string.lower()
+            itens_data['produto'] = itens.select('span.txtTit')[
+                0
+            ].string.lower()
+
+            itens_data['categoria'] = self._guesser.predict_cat(
+                itens_data['produto']
+            )
+
             itens_data['quantidade'] = Decimal(
                 float(
                     itens.select('span.Rqtd')[0]
@@ -232,6 +261,7 @@ class HtmlAnalyser:
 
         return lista_dados_nota
 
+
 class FileManager:
     def __init__(self, path2notes):
         self.path2notes = path2notes
@@ -248,7 +278,7 @@ class FileManager:
             raise NotADirectoryError
 
     def list_files(self) -> List[Path]:
-        
+
         files2read = []
 
         for html_file in self.path2notes.glob('*.html'):
@@ -256,19 +286,22 @@ class FileManager:
             new = html_file.parent.joinpath(f'nota_{temp_name}.html')
             html_file.rename(new)
             files2read.append(new)
-        
+
         self.path2notes.joinpath('notas_processadas').mkdir(exist_ok=True)
         self.path2notes.joinpath('notas_nao_processadas').mkdir(exist_ok=True)
 
         return files2read
 
-
     def move_file_after_parsing(self, file_path: Path, processed: bool = True):
         if processed:
-            target_processed = self._path2notes.joinpath("notas_processadas", f'pro_{file_path.name}')
+            target_processed = self._path2notes.joinpath(
+                'notas_processadas', f'pro_{file_path.name}'
+            )
             file_path.rename(target_processed)
         else:
-            target_nonprocessed = self._path2notes.joinpath("notas_nao_processadas", f'pro_{file_path.name}')
+            target_nonprocessed = self._path2notes.joinpath(
+                'notas_nao_processadas', f'pro_{file_path.name}'
+            )
             file_path.rename(target_nonprocessed)
 
 
@@ -280,9 +313,11 @@ def main(local) -> None:
 
     files_list = manager.list_files()
 
+    soup = HtmlAnalyser()
+
     for file in files_list:
 
-        soup = HtmlAnalyser(htmlfile=file)
+        soup.htmlfile = file
 
         if soup.validate_content() == True:
 
@@ -290,8 +325,12 @@ def main(local) -> None:
 
             if db_ops.check_datatypes(**dados_nota):
 
-                mercado = db_ops.get_or_create_supermercado(name_adress=dados_nota["supermercado_id"])
-                nota_id = db_ops.insert_nota2db(nota_infos=dados_nota, mercado_id=mercado)
+                mercado = db_ops.get_or_create_supermercado(
+                    name_adress=dados_nota['supermercado_id']
+                )
+                nota_id = db_ops.insert_nota2db(
+                    nota_infos=dados_nota, mercado_id=mercado
+                )
 
             dados_items = soup.obtain_items_data(nota=nota_id)
 
@@ -307,10 +346,10 @@ def main(local) -> None:
             print('skipping file...')
             manager.move_file_after_parsing(file, processed=False)
             print('\n\n')
-    
+
     db_ops.db.close()
 
 
 if __name__ == '__main__':
-    #main('/home/gustavo/Documentos/notas/')
+    # main('/home/gustavo/Documentos/notas/')
     print('oi')
