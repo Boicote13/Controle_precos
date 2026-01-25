@@ -17,12 +17,19 @@ NOTA_TITLE = [
     "DF-e Portal/Pr - Consulta DANFE NFC-e",
 ]
 
+# A ordem dos regex importa
+# especialmente para Unidades/Un e Leve x pague x
+# x pode ser unidades, ml, g...
+# se tirar eles antes vai sobrar um leve  pague  .
 REGEX_LIST = [
-    "[0-9]? ?[kK][gG]", "[0-9],[0-9]+ ?[kK][gG]", "[0-9]+ ?[gG]",
-    "[0-9]+\.[0-9]+ ?[gG]", "[0-9]+ ?[mM][lL]", "[0-9]+ ?[lL]",
-    "[0-9]+ ?[uU]{1}[nN]{1}", "[0-9]+ ?[uU]nidades?", "[0-9]+ ?[sS]achês?",
-    "[0-9]+ [rR]olos? ?", "[0-9]+ [mM]etros? ?", "[lL]eve [0-9]+ [pP]ague [0-9]+",
-    "[0-9]+ [rR]efis", "[rR]efil", "[0-9]+[cm]?x[0-9]+[cm]?"
+    "[0-9]+ ?[uU]nidades?", "[0-9]+ ?[uU]{1}[nN]{1}", "[0-9]? ?[kK][gG]",
+    "[0-9],[0-9]+ ?[kK][gG]", "[0-9]+\.[0-9]+ ?[gG]", "[0-9]+ ?[gG]",
+    "[0-9]+ ?[mM][lL]", "[0-9]+ ?[lL]", "[0-9]+%",
+    "Leve Mais Pague Menos" ,"Leve +Pague +", "Leve [0-9]+ Pague +",
+    "Oferta|Especial|Desconto|Econômico|[eE]mbalagem"
+    "[0-9]+ ?[sS]achês?", "[sS]achês?", "[0-9]+ C[aá]psulas?", 
+    "[0-9]+ [rR]olos? ?", "[0-9]+ [mM]etros? ?",
+    "[0-9]+ [rR]efis", "[rR]efil", "[0-9]+(cm)? ?x ?[0-9]+(cm)?"
 ]
 
 CATEGORY_DICT = {
@@ -33,7 +40,7 @@ CATEGORY_DICT = {
     5 : "Outros",
 }
 
-TRAINING_SET = Path("/home/gustavo/Documentos/items_cat_uniq.csv")
+TRAINING_SET = Path("/home/gustavo/Downloads/all_items_muffato.csv")
 
 MODEL = ""
 

@@ -25,7 +25,7 @@ django.setup()
 class CategoryGuesser:
     def __init__(self):
         self.classifier = GaussianNB()
-        self.cv = CountVectorizer(max_features=500)
+        self.cv = CountVectorizer(max_features=3000)
         self.ps = PorterStemmer()
         nltk.download('stopwords')
         self.all_stopwords = stopwords.words("portuguese")
@@ -57,6 +57,10 @@ class CategoryGuesser:
             names=["item", "categoria"]
         )
 
+        print(df.shape)
+
+        df = df[df["item"].str.split().str.len() < 13]
+
         # print(settings.REGEX_LIST)
 
         for expression in settings.REGEX_LIST:
@@ -66,10 +70,18 @@ class CategoryGuesser:
         # regexst = "[0-9]+ml"
         #print(df.groupby(["item"], as_index=False).first())
 
-        for i in df["item"]:
-            print(i)
+        # for i in df.loc[df["item"].str.contains("embalagem")]["item"]:
+        #     print(i)
+        # items_len = []
+        # for i in df["item"]:
+        #     print(i)
+        #     items_len.append(len(i.split(" ")))
 
-        return None
+        # print(items_len)
+
+        # print(df)
+
+        # return None
 
         df4corpus = []
 
@@ -88,7 +100,7 @@ class CategoryGuesser:
         )
 
         self.classifier.fit(X_train, y_train)
-        # y_pred = classifier.predict(X_test)
+        # y_pred = self.classifier.predict(X_test)
 
         # print(X_test)
         # #print(np.concatenate((y_pred.reshape(len(y_pred),1), y_test.reshape(len(y_test),1)),1))
@@ -129,9 +141,9 @@ def main():
         path2data='/home/gustavo/Downloads/all_items_muffato.csv'
     )
 
-    # pred = guesser.predict_cat(product=str(sys.argv[1]))
+    pred = guesser.predict_cat(product=str(sys.argv[1]))
 
-    # print(CATEGORY_DICT[pred.tolist()[0]])
+    print(pred)
 
 
 if __name__ == '__main__':
