@@ -11,6 +11,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix, accuracy_score
+from unidecode import unidecode
 # from controle_precos import REGEX_LIST
 from django.conf import settings
 
@@ -36,7 +37,7 @@ class CategoryGuesser:
 
         words = product.split()
         words = [
-            self.ps.stem(word) for word in words if word not in self.all_stopwords
+            unidecode(self.ps.stem(word)) for word in words if word not in self.all_stopwords
         ]
         words = ' '.join(words)
 
@@ -88,7 +89,7 @@ class CategoryGuesser:
         for i in df['item']:
             words = i.split()
             words = [
-                self.ps.stem(word) for word in words if word not in self.all_stopwords
+                unidecode(self.ps.stem(word)) for word in words if word not in self.all_stopwords
             ]
             words = ' '.join(words)
             df4corpus.append(words)
@@ -100,10 +101,43 @@ class CategoryGuesser:
         )
 
         self.classifier.fit(X_train, y_train)
-        # y_pred = self.classifier.predict(X_test)
+        
 
+        # Built a custom X_test, Y_test
+        corpus = []
+        with open("/home/gustavo/Documentos/ML/real_testset.txt", "r") as input:
+            for i in input.readlines()[:-1]:
+                name = i.strip()
+                # print(name)
+                corr_nam = []
+                if name not in corpus:
+                    for expression in settings.REGEX_LIST:
+                        if len(corr_nam) < 1:
+                            corr = re.sub(expression, "", name)
+                            corr_nam.append(corr)
+                        else:
+                            corr = re.sub(expression, "", corr_nam[-1])
+                            corr_nam.append(corr)
+                        # ...
+                print(name)
+                print(corr_nam)
+                if len(corr_nam) > 1:
+                    corpus.append(self.ps.stem(corr_nam[-1].strip()))
+
+        print(corpus)
+
+        # for expression in settings.REGEX_LIST:                    
+        #     corpus_new = [re.sub(expression, "", name) for name in corpus]
+        # print(corpus_new)
+
+        realXtest = self.cv.transform(corpus).toarray()
+
+        y_pred = self.classifier.predict(realXtest)
         # print(X_test)
         # #print(np.concatenate((y_pred.reshape(len(y_pred),1), y_test.reshape(len(y_test),1)),1))
+
+        print(y_pred)
+        # print(type(y_test))
 
         # cm = confusion_matrix(y_test, y_pred)
         # print(cm)
@@ -138,12 +172,12 @@ def main():
     guesser = CategoryGuesser()
 
     guesser.train_model(
-        path2data='/home/gustavo/Downloads/all_items_muffato.csv'
+        path2data='/home/gustavo/Documentos/ML/raw_muffato_data/all_items_muffato.csv'
     )
 
-    pred = guesser.predict_cat(product=str(sys.argv[1]))
+    # pred = guesser.predict_cat(product=str(sys.argv[1]))
 
-    print(pred)
+    # print(pred)
 
 
 if __name__ == '__main__':

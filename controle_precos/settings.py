@@ -40,7 +40,7 @@ CATEGORY_DICT = {
     5 : "Outros",
 }
 
-TRAINING_SET = Path("/home/gustavo/Downloads/all_items_muffato.csv")
+TRAINING_SET = Path("/home/gustavo/Documentos/ML/raw_muffato_data/all_items_muffato.csv")
 
 MODEL = ""
 

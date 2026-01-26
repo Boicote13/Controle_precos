@@ -173,6 +173,7 @@ class HtmlAnalyser:
             return True
         else:
             print('The HTML content of this file is not the expected...')
+            print(self._htmlfile)
             return False
 
     def obtain_notas_data(self) -> Dict[str, Union[float, str, Decimal]]:
