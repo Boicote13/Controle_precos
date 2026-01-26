@@ -1,5 +1,5 @@
-backups/
-controle_precos/__pycache__/
-notas_fiscais/__pycache__/
-notas_fiscais/migrations/
-*.sqlite3
+backend/backups/
+backend/controle_precos/__pycache__/
+backend/notas_fiscais/__pycache__/
+backend/notas_fiscais/migrations/
+backend/*.sqlite3

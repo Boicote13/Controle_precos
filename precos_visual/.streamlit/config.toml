@@ -1,0 +1,15 @@
+[theme]
+chartCategoricalColors=[
+	"#f7c143", #amareloNacho
+	"#6d0700", #vermelhoNacho
+	"#a84604", #marromNacho
+	"#89851d", #verdeNacho
+	"#e68809", #laranjaNacho
+	"#4d654d", #VerdeEscDoom
+	"#a6b95f", #VerdeClaDoom
+	"#a44741", #vermelhoDoom
+	"#757b8f", #CinzaDoom
+	"#eaddc6", #beijeDoom
+]
+backgroundColor = "#757b8f"
+baseFontSize=20
