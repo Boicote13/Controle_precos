@@ -67,9 +67,6 @@ class CategoryGuesser:
         for expression in settings.REGEX_LIST:
             #df["item"] = df["item"].replace(regex=expression, value="")
             df["item"] = df["item"].apply(lambda x: re.sub(expression, "", x))
-        
-        # regexst = "[0-9]+ml"
-        #print(df.groupby(["item"], as_index=False).first())
 
         # for i in df.loc[df["item"].str.contains("embalagem")]["item"]:
         #     print(i)
@@ -77,12 +74,6 @@ class CategoryGuesser:
         # for i in df["item"]:
         #     print(i)
         #     items_len.append(len(i.split(" ")))
-
-        # print(items_len)
-
-        # print(df)
-
-        # return None
 
         df4corpus = []
 
@@ -119,12 +110,12 @@ class CategoryGuesser:
                             corr = re.sub(expression, "", corr_nam[-1])
                             corr_nam.append(corr)
                         # ...
-                print(name)
-                print(corr_nam)
+                # print(name)
+                # print(corr_nam)
                 if len(corr_nam) > 1:
                     corpus.append(self.ps.stem(corr_nam[-1].strip()))
 
-        print(corpus)
+        # print(corpus)
 
         # for expression in settings.REGEX_LIST:                    
         #     corpus_new = [re.sub(expression, "", name) for name in corpus]
@@ -136,7 +127,7 @@ class CategoryGuesser:
         # print(X_test)
         # #print(np.concatenate((y_pred.reshape(len(y_pred),1), y_test.reshape(len(y_test),1)),1))
 
-        print(y_pred)
+        # print(y_pred)
         # print(type(y_test))
 
         # cm = confusion_matrix(y_test, y_pred)

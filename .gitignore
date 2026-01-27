@@ -3,3 +3,4 @@ backend/controle_precos/__pycache__/
 backend/notas_fiscais/__pycache__/
 backend/notas_fiscais/migrations/
 backend/*.sqlite3
+backend/.env

@@ -81,6 +81,8 @@ class AdicionarNotaArquivo(FormView):
             else:
                 print(file)
                 print('skipping file...')
+        
+        # db_ops.close()
 
         return super().form_valid(form)
 

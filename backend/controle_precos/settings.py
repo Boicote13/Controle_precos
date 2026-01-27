@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
+import dotenv
 from pathlib import Path
 
 NOTA_TITLE = [
@@ -40,19 +41,33 @@ CATEGORY_DICT = {
     5 : "Outros",
 }
 
-TRAINING_SET = Path("/home/gustavo/Documentos/ML/raw_muffato_data/all_items_muffato.csv")
-
 MODEL = ""
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+TRAINING_SET = BASE_DIR.joinpath("notas_fiscais/scripts/all_items_muffato.csv")
+# TRAINING_SET = Path("/home/gustavo/Documentos/ML/raw_muffato_data/all_items_muffato.csv")
+
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)aya(3iq0%^i0*+kayg*9k&e0g(j*(mg2!*!x-ceb2(b&$w#@o'
+# Source - https://stackoverflow.com/a
+# Posted by Zack Plauché, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-01-26, License - CC BY-SA 4.0
+
+
+# Add .env variables anywhere before SECRET_KEY
+dotenv_file = os.path.join(BASE_DIR, ".env")
+if os.path.isfile(dotenv_file):
+    dotenv.load_dotenv(dotenv_file)
+
+# UPDATE secret key
+SECRET_KEY = os.environ['SECRET_KEY'] 
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
