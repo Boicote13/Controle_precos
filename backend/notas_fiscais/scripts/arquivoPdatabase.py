@@ -8,7 +8,7 @@ from typing import Union, Dict, List
 from decimal import Decimal, getcontext
 
 from bs4 import BeautifulSoup
-from peewee import SqliteDatabase
+from peewee import PostgresqlDatabase
 from playhouse.reflection import generate_models
 
 from controle_precos.settings import *
@@ -19,8 +19,8 @@ getcontext().prec = 3
 
 
 class DatabaseOperations:
-    def __init__(self, db_path: str):
-        self.db = db_path
+    def __init__(self, db_name: str):
+        self.db = db_name
         self.__models_globally()
 
     @property
@@ -28,8 +28,14 @@ class DatabaseOperations:
         return self._db
 
     @db.setter
-    def db(self, db_path: str) -> None:
-        self._db = SqliteDatabase(db_path)
+    def db(self, name: str) -> None:
+        #db = PostgresqlDatabase("mydb", user="gustavo", password="gustavo131621", host="localhost")
+        self._db = PostgresqlDatabase(
+            name,
+            user="gustavo",
+            password=os.environ["POSTGRES_PASS"],
+            host="localhost"
+        )
 
     def __models_globally(self) -> None:
         self._db.connect()
