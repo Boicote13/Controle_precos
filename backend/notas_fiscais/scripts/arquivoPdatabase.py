@@ -29,7 +29,6 @@ class DatabaseOperations:
 
     @db.setter
     def db(self, name: str) -> None:
-        #db = PostgresqlDatabase("mydb", user="gustavo", password="gustavo131621", host="localhost")
         self._db = PostgresqlDatabase(
             name,
             user="gustavo",
