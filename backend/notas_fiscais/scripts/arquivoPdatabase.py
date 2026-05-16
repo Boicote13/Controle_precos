@@ -8,7 +8,7 @@ from typing import Union, Dict, List
 from decimal import Decimal, getcontext
 
 from bs4 import BeautifulSoup
-from peewee import SqliteDatabase
+from peewee import PostgresqlDatabase, SqliteDatabase
 from playhouse.reflection import generate_models
 
 from controle_precos.settings import *
@@ -19,8 +19,9 @@ getcontext().prec = 3
 
 
 class DatabaseOperations:
-    def __init__(self, db_path: str):
-        self.db = db_path
+    def __init__(self, db_name: str, use_postgres: bool = None):
+        self._use_postgres = use_postgres
+        self.db = db_name
         self.__models_globally()
 
     @property
@@ -28,13 +29,31 @@ class DatabaseOperations:
         return self._db
 
     @db.setter
-    def db(self, db_path: str) -> None:
-        self._db = SqliteDatabase(db_path)
+    def db(self, name: str) -> None:
+        if self._use_postgres is not None:
+            use_pg = self._use_postgres
+        elif os.environ.get("USE_POSTGRES", "false").lower() == "true":
+            use_pg = True
+        elif not DEBUG:
+            use_pg = True
+        else:
+            use_pg = False
+
+        if use_pg:
+            self._db = PostgresqlDatabase(
+                name,
+                user="gustavo",
+                password=os.environ["POSTGRES_PASSWORD"],
+                host="localhost"
+            )
+            print(f'Entrei no banco Postgres {self._db}')
+        else:
+            self._db = SqliteDatabase(name)
+            print(f'Entrei no banco sqlite3 {self._db}')
 
     def __models_globally(self) -> None:
         self._db.connect()
-        models = generate_models(self._db)
-        globals().update(models)
+        self.models = generate_models(self._db)
 
     def check_datatypes(self, *args, **kwargs) -> bool:
 
@@ -101,7 +120,7 @@ class DatabaseOperations:
         mercado_id: int,
     ) -> int:
 
-        nota_query = notas_fiscais_notafiscal.insert(
+        nota_query = self.models['notas_fiscais_notafiscal'].insert(
             data_emissao=nota_infos['data_emissao'],
             valor_total=nota_infos['valor_total'],
             total_items=nota_infos['total_items'],
@@ -115,13 +134,13 @@ class DatabaseOperations:
     def insert_items2db(
         self, items_infos: List[Dict[str, Union[str, int, Decimal]]]
     ) -> None:
-        notas_fiscais_itemnotafiscal.insert_many(items_infos).execute()
+        self.models['notas_fiscais_itemnotafiscal'].insert_many(items_infos).execute()
 
     def get_or_create_supermercado(self, name_adress: tuple[str, str]) -> int:
 
         name, adress = name_adress
 
-        mercado, created = notas_fiscais_supermercado.get_or_create(
+        mercado, created = self.models['notas_fiscais_supermercado'].get_or_create(
             nome=name, endereco=adress
         )
 

@@ -3,3 +3,5 @@ matplotlib==3.10.8
 pandas==2.3.3
 peewee==3.18.3
 streamlit==1.52.2
+psycopg2-binary==2.9.11
+python-dotenv==1.2.1

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import datetime
+import os
 from typing import Dict, List
 
 from peewee import *
+from dotenv import load_dotenv
 import altair as alt
 import streamlit as st
 import pandas as pd
@@ -11,6 +13,10 @@ from playhouse.reflection import generate_models
 import matplotlib.pyplot as plt
 
 from settings import DELTA
+
+dotenv_path = os.path.join(os.path.dirname(__file__), "..", "backend", ".env")
+if os.path.isfile(dotenv_path):
+    load_dotenv(dotenv_path)
 
 
 class DataFrameOperations:
@@ -41,44 +47,54 @@ class DataFrameOperations:
         """
         self._df = self._df.groupby(by=[collumn], as_index=False, sort=False).sum()
 
-def database_operations(db_path: str) -> SqliteDatabase:
-    db = SqliteDatabase(db_path)
+def database_operations():
+    db = PostgresqlDatabase(
+        "mydb",
+        user="gustavo",
+        password=os.environ["POSTGRES_PASSWORD"],
+        host="localhost",
+    )
     db.connect()
     models = generate_models(db)
-    globals().update(models)
-    return db
+    return db, models
 
 # @st.cache_data
-def reais_per_month(inicio, fim) -> Dict[str, List[str]]:
+def reais_per_month(inicio, fim, models) -> Dict[str, List[str]]:
 
+    NotaFiscal = models['notas_fiscais_notafiscal']
+    Supermercado = models['notas_fiscais_supermercado']
     valor_por_data = {'data': [], 'total': []}
 
-    for notinha in (notas_fiscais_notafiscal.
+    for notinha in (NotaFiscal.
                     select().
-                    join(notas_fiscais_supermercado)
-                    .where(notas_fiscais_notafiscal.data_emissao < inicio,
-                           notas_fiscais_notafiscal.data_emissao > fim)):
+                    join(Supermercado)
+                    .where(NotaFiscal.data_emissao < inicio,
+                           NotaFiscal.data_emissao > fim)):
                     
         valor_por_data['data'].append(notinha.data_emissao)
         valor_por_data['total'].append(int(notinha.valor_total))
 
     return valor_por_data
 
-def reais_per_mercado():
+def reais_per_mercado(models):
 
+    NotaFiscal = models['notas_fiscais_notafiscal']
+    Supermercado = models['notas_fiscais_supermercado']
     valor_por_mercado = {'mercado': [], 'total': []}
 
-    for notinha in (notas_fiscais_notafiscal.
+    for notinha in (NotaFiscal.
                     select().
-                    join(notas_fiscais_supermercado)):
-                    # .where(notas_fiscais_notafiscal.total_items > 5)):
+                    join(Supermercado)):
         valor_por_mercado['mercado'].append(notinha.supermercado.nome)
         valor_por_mercado['total'].append(int(notinha.valor_total))
     
     return valor_por_mercado
 
-def reais_per_item():
+def reais_per_item(models):
 
+    NotaFiscal = models['notas_fiscais_notafiscal']
+    ItemNotaFiscal = models['notas_fiscais_itemnotafiscal']
+    Supermercado = models['notas_fiscais_supermercado']
     item_history = {
         'item': [],
         'data_compra': [],
@@ -87,20 +103,18 @@ def reais_per_item():
         'local': [],
     }
 
-    for item in (notas_fiscais_itemnotafiscal.
+    for item in (ItemNotaFiscal.
                  select().
-                 join(notas_fiscais_notafiscal)):
+                 join(NotaFiscal)):
         item_history['item'].append(item.produto)
         item_history['data_compra'].append(item.nota_fiscal.data_emissao)
         item_history['preco_unidade'].append(float(item.preco_unitario))
         item_history['preco_total'].append((float(item.preco_unitario) * float(item.quantidade)))
-        item_history['local'].append(notas_fiscais_supermercado.get(notas_fiscais_supermercado.id == item.nota_fiscal.supermercado_id).nome)
-        #print(q)
-        #item_history['local'].append()
+        item_history['local'].append(Supermercado.get(Supermercado.id == item.nota_fiscal.supermercado_id).nome)
 
     return item_history
 
-def valor_mes_personalizado() -> None:
+def valor_mes_personalizado(models) -> None:
 
     st.markdown("#### Gasto por mês (default: últimos 6 meses)")
 
@@ -108,30 +122,31 @@ def valor_mes_personalizado() -> None:
 
     fim = st.date_input("Até:", value=datetime.date.today() - DELTA)
 
-    valor_per_data = reais_per_month(inicio, fim)
+    valor_per_data = reais_per_month(inicio, fim, models)
     
     db_df = DataFrameOperations(valor_per_data)
 
     db_df.df['month_year'] = db_df.df['data'].apply(lambda x: x.strftime('%B-%y'))
+    db_df.df['month_sort'] = db_df.df['data'].apply(lambda x: x.strftime('%Y-%m'))
+    agg_df = db_df.df.groupby(['month_year', 'month_sort'], as_index=False)['total'].sum()
+    agg_df.sort_values(by=['month_sort'], inplace=True)
 
-    db_df.df.sort_values(by=['data'], inplace=True)
-
-    alt_fig = alt.Chart(db_df.df).mark_bar().encode(
-        y=alt.Y('sum(total):Q', title='Total Gasto R$'),
+    alt_fig = alt.Chart(agg_df).mark_bar().encode(
+        y=alt.Y('total:Q', title='Total Gasto R$'),
         x=alt.X('month_year', sort=None, title='Mês - Ano',
                 axis=alt.Axis(labelAngle=45)
         ),
-        color='sum(total)',
+        color=alt.Color('total:Q', scale=alt.Scale(scheme='orangered')),
     ).interactive()
 
     st.altair_chart(alt_fig)
 
 
-def valor_mercado_personalizado():
+def valor_mercado_personalizado(models):
 
     st.markdown("#### Grafico indicando valor gasto por supermercado.")
 
-    valor_per_mercado = reais_per_mercado()
+    valor_per_mercado = reais_per_mercado(models)
 
     mercados = DataFrameOperations(valor_per_mercado)
 
@@ -167,12 +182,12 @@ def valor_mercado_personalizado():
     else:
         st.write("Escolha algum supermercado da lista")
 
-def historia_item():
+def historia_item(models):
 
     st.markdown("#### Histórico de preços.")
     st.markdown("Escolha produtos para verificar seus preços ao longo do tempo")
 
-    valor_por_item = reais_per_item()
+    valor_por_item = reais_per_item(models)
 
     item_df = DataFrameOperations(valor_por_item)
 
@@ -205,12 +220,12 @@ def historia_item():
 
 if __name__ == "__main__":
 
-    data_op = database_operations('/home/gustavo/controle_precos/backend/db.sqlite3')
+    data_op, models = database_operations()
 
     st.title("Explorador de Notas Fiscais")
 
-    valor_mes_personalizado()
-    valor_mercado_personalizado() 
-    historia_item()
+    valor_mes_personalizado(models)
+    valor_mercado_personalizado(models) 
+    historia_item(models)
 
     data_op.close()
