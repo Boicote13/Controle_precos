@@ -16,6 +16,7 @@ from pathlib import Path
 NOTA_TITLE = [
     "DOCUMENTO AUXILIAR DA NOTA FISCAL DE CONSUMIDOR ELETRÔNICA",
     "DF-e Portal/Pr - Consulta DANFE NFC-e",
+    "Consulta DF-e",
 ]
 
 # A ordem dos regex importa

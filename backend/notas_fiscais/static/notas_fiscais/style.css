@@ -50,6 +50,7 @@ div.footer {
 
 div.icons {
     margin: 20px 5px;
+    display: grid;
     align-content: center;
     padding: 10px;
 }

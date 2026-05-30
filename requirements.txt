@@ -1,0 +1,20 @@
+# Django (backend)
+django==5.2
+bs4==0.0.2
+nltk==3.9.2
+numpy==2.2.6
+requests==2.32.5
+scikit-learn==1.7.2
+scipy==1.15.3
+Unidecode==1.4.0
+
+# Streamlit (precos_visual)
+altair==6.0.0
+matplotlib==3.10.8
+streamlit==1.52.2
+
+# Compartilhadas
+pandas==2.3.3
+peewee==3.18.3
+psycopg2-binary==2.9.11
+python-dotenv==1.2.1

@@ -38,3 +38,170 @@ python3 manage.py loaddata backups/backup_20260114.json
 ```
 
 A sugestão é que em cada mudança siginificativa de algum Model seja feito um backup pois pode haver conflito na hora de recuperar backups de bancos com estruturas diferentes.
+
+---
+
+# Setup para desenvolvimento
+
+## Pré-requisitos
+
+- Python 3.10+
+- PostgreSQL (opcional, apenas se for usar este banco)
+
+## Instalação
+
+```bash
+# Clone o repositório
+git clone <url-do-repositorio>
+cd controle_precos/backend
+
+# Crie e ative um virtualenv
+python3 -m venv venv
+source venv/bin/activate
+
+# Instale as dependências
+pip install -r requirements.txt
+
+# Configure o ambiente
+cp .env.example .env
+# Edite .env conforme necessário
+```
+
+## Configuração do banco de dados
+
+### Modo padrão (SQLite)
+
+Com `DEBUG=true` e sem configurar PostgreSQL, a aplicação usa SQLite automaticamente:
+
+```bash
+python manage.py migrate
+python manage.py runserver
+```
+
+### Modo debug com PostgreSQL
+
+Defina as variáveis no `.env`:
+
+```env
+DEBUG=true
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=mydb
+DB_USER=postgres
+DB_PASSWORD=minha_senha
+DB_HOST=localhost
+DB_PORT=5432
+POSTGRES_PASSWORD=minha_senha
+USE_POSTGRES=true
+```
+
+Ou via variáveis de ambiente (sobrescreve o `.env`):
+
+```bash
+DB_ENGINE=django.db.backends.postgresql DB_NAME=mydb DB_USER=postgres \
+DB_PASSWORD=minha_senha DB_HOST=localhost DB_PORT=5432 \
+USE_POSTGRES=true python manage.py runserver
+```
+
+### Modo produção (DEBUG=false, sempre PostgreSQL)
+
+```env
+DEBUG=false
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=mydb
+DB_USER=postgres
+DB_PASSWORD=minha_senha
+DB_HOST=localhost
+DB_PORT=5432
+POSTGRES_PASSWORD=minha_senha
+```
+
+> Com `DEBUG=false` o PostgreSQL é obrigatório — a aplicação não usa SQLite em produção.
+
+## Lógica de seleção do banco
+
+A aplicação usa dois sistemas de banco diferentes:
+
+### Django ORM (admin, listas, formulários)
+
+```python
+# settings.py
+DATABASES = {
+    "default": {
+        "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("DB_NAME", str(BASE_DIR / "db.sqlite3")),
+        ...
+    }
+}
+```
+
+| `DB_ENGINE` configurado? | Banco usado |
+|--------------------------|-------------|
+| Não | SQLite (`backend/db.sqlite3`) |
+| Sim (ex: `postgresql`) | PostgreSQL |
+
+### Peewee (DatabaseOperations — upload de arquivo HTML)
+
+A classe `DatabaseOperations` em `notas_fiscais/scripts/arquivoPdatabase.py` segue esta ordem de decisão:
+
+1. Se `use_postgres` passado explicitamente → usa esse valor
+2. Se `USE_POSTGRES=true` no ambiente → PostgreSQL
+3. Se `DEBUG=false` → PostgreSQL
+4. Senão → SQLite
+
+### Streamlit (precos_visual)
+
+O módulo `precos_visual/visual.py` conecta diretamente no PostgreSQL lendo as credenciais do `.env` do backend.
+
+```bash
+cd precos_visual
+pip install -r requirements.txt
+streamlit run visual.py
+```
+
+## Migrações
+
+```bash
+python manage.py makemigrations   # criar migrações se houver mudanças nos models
+python manage.py migrate          # aplicar migrações
+```
+
+## Servidor de desenvolvimento
+
+```bash
+python manage.py runserver
+# Acessar: http://127.0.0.1:8000
+```
+
+## Backup e restauração
+
+```bash
+# Backup
+python manage.py dumpdata --indent 2 > backups/backup_$(date +%Y%m%d).json
+
+# Restauração (banco SQLite)
+rm db.sqlite3
+python manage.py migrate
+python manage.py loaddata backups/backup_20260114.json
+```
+
+---
+
+## Estrutura do projeto
+
+```
+controle_precos/
+├── backend/                  # Django (backend principal)
+│   ├── controle_precos/      # Configurações do Django
+│   ├── notas_fiscais/        # App principal
+│   │   ├── management/       # Comandos personalizados
+│   │   ├── scripts/          # Processamento de notas (PDF/HTML → BD)
+│   │   └── templates/        # Templates HTML
+│   ├── .env                  # Config local (não versionado)
+│   ├── .env.example          # Template de configuração
+│   └── requirements.txt
+├── precos_visual/            # Streamlit (visualização de dados)
+│   ├── visual.py
+│   ├── .streamlit/config.toml
+│   └── requirements.txt
+└── README.md
+```

@@ -48,12 +48,17 @@ class DataFrameOperations:
         self._df = self._df.groupby(by=[collumn], as_index=False, sort=False).sum()
 
 def database_operations():
-    db = PostgresqlDatabase(
-        "mydb",
-        user="gustavo",
-        password=os.environ["POSTGRES_PASSWORD"],
-        host="localhost",
-    )
+    if os.environ.get("USE_POSTGRES", "false").lower() == "true":
+        db = PostgresqlDatabase(
+            "mydb",
+            user="gustavo",
+            password=os.environ["POSTGRES_PASSWORD"],
+            host="localhost",
+        )
+        print("Conectado ao PostgreSQL")
+    else:
+        db = SqliteDatabase(os.path.join(os.path.dirname(__file__), "db.sqlite3"))
+        print("Conectado ao SQLite")
     db.connect()
     models = generate_models(db)
     return db, models
@@ -126,7 +131,7 @@ def valor_mes_personalizado(models) -> None:
     
     db_df = DataFrameOperations(valor_per_data)
 
-    db_df.df['month_year'] = db_df.df['data'].apply(lambda x: x.strftime('%B-%y'))
+    db_df.df['month_year'] = db_df.df['data'].apply(lambda x: x.strftime('%b-%y'))
     db_df.df['month_sort'] = db_df.df['data'].apply(lambda x: x.strftime('%Y-%m'))
     agg_df = db_df.df.groupby(['month_year', 'month_sort'], as_index=False)['total'].sum()
     agg_df.sort_values(by=['month_sort'], inplace=True)
@@ -191,16 +196,42 @@ def historia_item(models):
 
     item_df = DataFrameOperations(valor_por_item)
 
-    option = st.multiselect(
-        "Selecione os items:",
-        item_df.df['item'].str.lower().unique().tolist(),
-    )
+    if 'selected_items' not in st.session_state:
+        st.session_state.selected_items = set()
 
-    if option:
+    search = st.text_input("Buscar item:", placeholder="Digite o nome do item para filtrar...")
+
+    unique_items = sorted(item_df.df['item'].str.lower().unique())
+
+    filtered = [i for i in unique_items if search.lower() in i] if search else []
+
+    if filtered:
+        df_selecao = pd.DataFrame({
+            'item': filtered,
+            'selecionar': [i in st.session_state.selected_items for i in filtered],
+        })
+        edited = st.data_editor(
+            df_selecao,
+            use_container_width=True,
+            hide_index=True,
+            column_config={"selecionar": st.column_config.CheckboxColumn("Selecionar")},
+            disabled=["item"],
+        )
+        current = set(edited[edited['selecionar']]['item'].tolist())
+        if current != st.session_state.selected_items:
+            st.session_state.selected_items = current
+            st.rerun()
+    elif search:
+        st.caption("Nenhum item encontrado.")
+        st.rerun()
+
+    selected = list(st.session_state.selected_items)
+
+    if selected:
 
         filtered_data = pd.DataFrame(columns=["item", "data_compra", "preco_unidade", "preco_total", "local"])
 
-        for itens in option:
+        for itens in selected:
             newdf = item_df.df.loc[item_df.df["item"].str.lower() == itens.lower()]
             filtered_data = pd.concat([filtered_data, newdf])
         

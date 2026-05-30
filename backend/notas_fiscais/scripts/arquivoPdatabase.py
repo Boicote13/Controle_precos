@@ -191,8 +191,9 @@ class HtmlAnalyser:
         if self._htmlfile.find('title').get_text(strip=True) in NOTA_TITLE:
             return True
         else:
-            print('The HTML content of this file is not the expected...')
             print(self._htmlfile)
+            print('The HTML content of this file is not the expected...')
+            print(self._htmlfile.find('title').get_text(strip=True))
             return False
 
     def obtain_notas_data(self) -> Dict[str, Union[float, str, Decimal]]:

@@ -1,6 +1,21 @@
+### Python ###
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+### Ambiente ###
+.env
+*.sqlite3
+mydb
+
+### Projeto ###
 backend/backups/
-backend/controle_precos/__pycache__/
-backend/notas_fiscais/__pycache__/
 backend/notas_fiscais/migrations/
-backend/*.sqlite3
-backend/.env
+backend/oi.py
+backend/Dockerfile
+docker/
+docker-compose.yml
+precos_visual/__pycache__/
+precos_visual/__pycache__/*
